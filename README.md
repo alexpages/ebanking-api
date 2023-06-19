@@ -14,7 +14,7 @@ The system work as follows:
 
 The suggested architecture is the following:
 
-![](/Users/alexpages/IdeaProjects/ebanking-api/src/main/resources/architecture_overview.png)
+![](src/main/resources/architecture_overview.png)
 
 ***
 ### Database

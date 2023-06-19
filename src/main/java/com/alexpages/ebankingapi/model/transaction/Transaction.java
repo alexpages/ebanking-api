@@ -1,4 +1,4 @@
-package com.alexpages.ebankingapi.model;
+package com.alexpages.ebankingapi.model.transaction;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

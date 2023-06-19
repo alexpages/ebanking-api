@@ -1,6 +1,5 @@
 package com.alexpages.ebankingapi.security.config;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -28,11 +27,10 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         http
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth ->{
-                    auth.requestMatchers("/api/v1/auth");   //whitelist requests in the inside pattern/list except the following
+                .authorizeHttpRequests((auth) ->{
+                    auth.requestMatchers("api/v1/auth/**").permitAll();  // whitelist requests in the inside pattern/list except the following
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement((sessionManagement) ->{

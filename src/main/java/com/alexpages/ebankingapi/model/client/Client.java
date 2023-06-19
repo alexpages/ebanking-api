@@ -19,8 +19,9 @@ public class Client implements UserDetails {
 
     @Id
     @GeneratedValue
-    private String id;
-    private List<Account> accounts;
+    private Integer id;
+    private String email;
+//    private List<Account> accounts;
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -37,7 +38,7 @@ public class Client implements UserDetails {
 
     @Override
     public String getUsername() {
-        return id;
+        return email;
     }
 
     @Override

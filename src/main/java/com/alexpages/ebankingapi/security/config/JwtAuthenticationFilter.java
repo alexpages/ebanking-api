@@ -30,15 +30,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");  //Header that contains the token
         final String jwt;
-        final String clientId;
+        final String email;
         if (authHeader == null){
             filterChain.doFilter(request, response);
             return;
         }
         jwt = authHeader;
-        clientId = jwtService.extractUsername(jwt);
-        if (clientId != null && SecurityContextHolder.getContext().getAuthentication() == null){
-            UserDetails clientDetails = this.userDetailsService.loadUserByUsername(clientId);
+        email = jwtService.extractUsername(jwt);
+        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null){
+            UserDetails clientDetails = this.userDetailsService.loadUserByUsername(email);
             if(jwtService.isTokenValid(jwt, clientDetails)){
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         clientDetails,

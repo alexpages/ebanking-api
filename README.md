@@ -28,9 +28,9 @@ Security has been implemented with the following concepts:
 - Roles
 - Encoded client password
 - JWT for Auth within http request
-- General http security configuration (some are deprecated //TODO)
-- Other filters
-- 
+- General http security configuration
+- Other filters (filterchain)
+
 ***
 ### JUnit
 

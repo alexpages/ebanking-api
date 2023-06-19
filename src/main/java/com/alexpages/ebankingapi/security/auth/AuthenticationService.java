@@ -1,5 +1,6 @@
 package com.alexpages.ebankingapi.security.auth;
 
+import com.alexpages.ebankingapi.exceptions.UserNotFoundException;
 import com.alexpages.ebankingapi.model.client.Client;
 import com.alexpages.ebankingapi.model.client.ClientRepository;
 import com.alexpages.ebankingapi.model.client.Role;
@@ -21,7 +22,8 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(RegisterRequest request) {
         var client = Client.builder()
-                .accounts(request.getAccounts())
+                .email(request.getEmail())
+//                .accounts(request.getAccounts())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
@@ -31,13 +33,16 @@ public class AuthenticationService {
         return AuthenticationResponse.builder().token(jwtToken).build(); //Generate token and save it
     }
 
-    public Object authenticate(AuthenticationRequest request) {
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getClientId(),
+                        request.getEmail(),
                         request.getPassword())
         );
+        var client = repository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("User by email " + request.getEmail() + " was not found"));
 
-        return null;
+        var jwtToken = jwtService.generateToken(client);          //User is obtained and it is returned
+        return AuthenticationResponse.builder().token(jwtToken).build(); //Auth response
     }
 }

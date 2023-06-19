@@ -1,6 +1,8 @@
 package com.alexpages.ebankingapi.security.config;
 
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -18,21 +20,24 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthFilter;    //automatically injected by spring
     private AuthenticationProvider authenticationProvider;  //automatically injected by spring
 
+    @Autowired
+    public SecurityConfiguration(JwtAuthenticationFilter jwtAuthFilter, AuthenticationProvider authenticationProvider) {
+        this.jwtAuthFilter = jwtAuthFilter;
+        this.authenticationProvider = authenticationProvider;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                .csrf()
-                .disable()
-                .authorizeHttpRequests()
-                .requestMatchers("")    //whitelist requests in the inside pattern/list except the following
-                .permitAll()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)         //stateless session
-                .and()
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth ->{
+                    auth.requestMatchers("/api/v1/auth");   //whitelist requests in the inside pattern/list except the following
+                    auth.anyRequest().authenticated();
+                })
+                .sessionManagement((sessionManagement) ->{
+                    sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                })
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

@@ -17,7 +17,7 @@ public class EbankingApiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(EbankingApiApplication.class, args);
 	}
-
+	//send message
 	@Bean
 	CommandLineRunner commandLineRunner(KafkaTemplate<String, String> kafkaTemplate) {
 		String jsonToSend = "{\"id\":\"8333\"," +

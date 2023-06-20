@@ -1,28 +1,27 @@
 package com.alexpages.ebankingapi.model.transaction;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Transaction {
 
-    @JsonProperty("id")
-    private String id;          // Unique identifier (e.g. 89d3o179-abcd-465b-o9ee-e2d5f6ofEld46)
+    private String id;                      // Unique identifier (e.g. 89d3o179-abcd-465b-o9ee-e2d5f6ofEld46)
     @Enumerated(EnumType.STRING)
-    @JsonProperty("currency")
-    private Currency currency;           // Amount with currency (eg GBP 100-, CHF 75)
-    @JsonProperty("amount")
-    private double amount;
-    @JsonProperty("iban")
-    private String iban;                // Account IBAN (eg. CH93-0000-0000-0000-0000-0)
-    @JsonProperty("valueDate")
-    private String valueDate;    // Value date (e.g. 01-10-2020)
-    @JsonProperty("description")
+    private Currency currency;              // Amount with currency (eg GBP 100-, CHF 75)
+    private BigDecimal amount;
+    private String iban;                    // Account IBAN (eg. CH93-0000-0000-0000-0000-0)
+    @JsonFormat(shape = JsonFormat.Shape.STRING,
+            pattern = "dd-MM-yyyy")
+    public Date time;                       // Value date (e.g. 01-10-2020)
     private String description;         // Description (e.g. Online payment CHF)
 }

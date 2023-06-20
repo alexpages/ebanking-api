@@ -1,4 +1,4 @@
-package com.alexpages.ebankingapi.kafka;
+package com.alexpages.ebankingapi.kafka.config;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -27,22 +27,15 @@ public class KafkaProducerConfig {
         return props;
     }
 
-
-    //The list of transactions should be consumed from a Kafka topic.
-    // key - transaction ID -> String
-    // value - JSON representation of the transaction -> String
-    //Producer factory, will create producers
     @Bean
     public ProducerFactory<String, String> producerFactory(){
         return new DefaultKafkaProducerFactory<>(producerConfig());
     }
 
-    //way to send messages (second String can be data object, like Transaction)
     @Bean
     public KafkaTemplate<String, String>  kafkaTemplate(
             ProducerFactory<String, String> producerFactory){
-        //producer factory from dependency injection
-        return new KafkaTemplate<>(producerFactory);
+        return new KafkaTemplate<>(producerFactory); //producer factory from dependency injection
     }
 
 }

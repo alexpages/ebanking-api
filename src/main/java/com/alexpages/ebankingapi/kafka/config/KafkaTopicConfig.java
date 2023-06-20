@@ -1,4 +1,4 @@
-package com.alexpages.ebankingapi.kafka;
+package com.alexpages.ebankingapi.kafka.config;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +12,4 @@ public class KafkaTopicConfig {
     public NewTopic transactionTopic(){
         return TopicBuilder.name("transaction").build();
     }
-
-
 }

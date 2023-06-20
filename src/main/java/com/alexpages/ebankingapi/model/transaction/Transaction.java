@@ -10,12 +10,9 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 public class Transaction {
 
     @JsonProperty("id")
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;          // Unique identifier (e.g. 89d3o179-abcd-465b-o9ee-e2d5f6ofEld46)
     @Enumerated(EnumType.STRING)
     @JsonProperty("currency")

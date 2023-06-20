@@ -21,7 +21,8 @@ public class Client implements UserDetails {
     @GeneratedValue
     private Integer id;
     private String email;
-//    private List<Account> accounts;
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Account> accounts;
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;

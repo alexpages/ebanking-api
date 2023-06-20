@@ -19,8 +19,7 @@ The suggested architecture is the following:
 ***
 ### Database
 - PostgreSQL: to store user, accounts and tokens (jwt)
-- Kafka: To retrieve data from messaging queues and in-memory storage.
-
+- Kafka: To retrieve data from messaging queues and in-memory storage. To set up locally follow: https://kafka.apache.org/quickstart
 ***
 ### Security
 Security has been implemented with the following concepts:

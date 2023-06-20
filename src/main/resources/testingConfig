@@ -7,3 +7,32 @@
     "email" : "hasnotransactions@synpulse.com",
     "password" : "password"
 }
+
+
+
+
+// Transactions
+
+{
+    "id" = "89d3o179-abcd-465b-o9ee-e2d5f6ofEld46",
+    "amountWithCurrency" = "GBP 100",
+    "iban" = "CH93-0000-0000-0000-0000-0",
+    "valueDate" = "01-10-2020",
+    "description" = "Online payment GBP"
+}
+
+{
+    "id" = "89d3o179-abcd-465b-o9ee-e2d5f63fEld46",
+    "amountWithCurrency" = "GBP 160",
+    "iban" = "CH93-0000-0000-0000-0000-0",
+    "valueDate" = "01-10-2020",
+    "description" = "Online payment GBP"
+}
+
+{
+    "id" = "89d3o179-abcd-465b-o9ee-e2d5f4ofEld46",
+    "amountWithCurrency" = "CHF 160",
+    "iban" = "CH93-0000-0000-0000-0000-0",
+    "valueDate" = "01-10-2020",
+    "description" = "Online payment CHF"
+}

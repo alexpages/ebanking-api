@@ -1,7 +1,6 @@
 package com.alexpages.ebankingapi.security.config;
 
 import com.alexpages.ebankingapi.model.client.ClientRepository;
-import io.github.cdimascio.dotenv.Dotenv;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,6 +1,7 @@
 package com.alexpages.ebankingapi.security.config;
 
 import com.alexpages.ebankingapi.model.client.ClientRepository;
+import io.github.cdimascio.dotenv.Dotenv;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class ApplicationConfig {
 
     private final ClientRepository repository;
-
     @Bean
     public UserDetailsService userDetailsService(){
         return username -> repository.findByEmail(username)

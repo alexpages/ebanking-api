@@ -31,11 +31,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader("Authorization");  //Header that contains the token
         final String jwt;
         final String email;
-        if (authHeader == null){
+        if (authHeader == null || !authHeader.startsWith("Bearer ")){
             filterChain.doFilter(request, response);
             return;
         }
-        jwt = authHeader;
+        jwt = authHeader.split(" ")[1].trim(); //Skips "Bearer and space" otherwise Servlet exception for ' ' space
         email = jwtService.extractUsername(jwt);
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null){
             UserDetails clientDetails = this.userDetailsService.loadUserByUsername(email);

@@ -12,6 +12,6 @@ public class ApiController {
 
     @GetMapping
     public ResponseEntity<String> hello(){
-        return ResponseEntity.ok("Hello from the other side");
+        return ResponseEntity.ok("Hello from the secured endpoint");
     }
 }

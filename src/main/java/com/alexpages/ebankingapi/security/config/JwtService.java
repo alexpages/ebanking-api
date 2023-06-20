@@ -8,7 +8,9 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,11 +20,11 @@ import java.util.function.Function;
 public class JwtService {
 
     //TODO to put it in application.yml
-    private static final String SECRET_KEY = "asM6TPEUqKKZUwm/NcFRDxSCERnzpZQDf4chT4zJhgpNDDxdcB06fva9e8rwpUtl";
+    private static final String SECRET_KEY = "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970";
 
     public String extractUsername(String jwtToken) {
         return extractClaim(jwtToken, Claims::getSubject);
-        //Subject is the clientId but for naming convention with spring boot we use Username
+        //Subject is the email but for naming convention with spring boot we use Username
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
@@ -58,10 +60,11 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token){
-        return Jwts.parserBuilder()
+        return Jwts
+                .parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody();
     }
 

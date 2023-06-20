@@ -1,5 +1,6 @@
 package com.alexpages.ebankingapi.security.auth;
 
+import com.alexpages.ebankingapi.exceptions.UserAlreadyPresentException;
 import com.alexpages.ebankingapi.exceptions.UserNotFoundException;
 import com.alexpages.ebankingapi.model.client.Client;
 import com.alexpages.ebankingapi.model.client.ClientRepository;
@@ -11,6 +12,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -21,6 +24,10 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
+        Optional<Client> clientOptional = repository.findByEmail(request.getEmail());
+        if (clientOptional.isPresent()){
+            throw new UserAlreadyPresentException("User with "+ request.getEmail() + " already present in the DB");
+        }
         var client = Client.builder()
                 .email(request.getEmail())
 //                .accounts(request.getAccounts())
@@ -45,4 +52,5 @@ public class AuthenticationService {
         var jwtToken = jwtService.generateToken(client);          //User is obtained and it is returned
         return AuthenticationResponse.builder().token(jwtToken).build(); //Auth response
     }
+
 }

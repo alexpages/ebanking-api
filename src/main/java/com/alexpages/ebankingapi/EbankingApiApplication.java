@@ -20,17 +20,14 @@ public class EbankingApiApplication {
 
 	@Bean
 	CommandLineRunner commandLineRunner(KafkaTemplate<String, String> kafkaTemplate) {
-		List<Transaction> transactions = List.of(
-				new Transaction(
-						"89d3o179-abcd-465b-o9ee-e2d5f63fEld46",
-						Currency.GBP,
-						160,
-						"CH93-0000-0000-0000-0000-0",
-						LocalDateTime.of(2020, 1, 2, 2, 3, 3),
-						"Online payment GBP"
-				));
+		String jsonToSend = "{\"id\":\"8333\"," +
+				"\"currency\":\"GBP\"," +
+				"\"amount\":\"100\"," +
+				"\"iban\":\"CH93-0000-0000-0000-0000-0\"," +
+				"\"valueDate\":\"01-10-2020\"," +
+				"\"description\":\"Online payment GBP\"}";
 
-		return args -> {kafkaTemplate.send("transaction", transactions.get(0).toString());
+		return args -> {kafkaTemplate.send("transaction", jsonToSend);
 		};
 	}
 }

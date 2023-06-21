@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -18,10 +19,13 @@ import java.util.List;
 public class Client implements UserDetails {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(name="email")
     private String email;
-    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = Account.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "column_fk", referencedColumnName = "email")
     private List<Account> accounts;
     private String password;
     @Enumerated(EnumType.STRING)

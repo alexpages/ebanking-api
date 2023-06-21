@@ -1,17 +1,24 @@
+
+
+//TEST USER
+
 {
     "email" : "synpulse8@synpulse.com",
-    "password" : "password"
+    "password" : "password",
+    "accounts" : [
+        {
+          "iban": "CH93-0000-0000-0000-0000-0",
+          "currency": "GBP"
+        },
+        {
+            "iban": "EU93-0000-0000-0000-0000-0",
+            "currency": "EUR"
+        }
+        ]
 }
 
-{
-    "email" : "hasnotransactions@synpulse.com",
-    "password" : "password"
-}
 
-
-
-
-// Transactions
+// TEST TRANSACTIONS
 
 {
     "id" = "89d3o179-abcd-465b-o9ee-e2d5f6ofEld46",

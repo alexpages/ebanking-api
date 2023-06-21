@@ -2,6 +2,7 @@ package com.alexpages.ebankingapi.model.client;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,14 +10,15 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@Builder
 @Table(name = "accounts")
 public class Account {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String iban; //TODO add checks for not having duplicated IBAN
+    private String iban;
     private String currency;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "email")
-    private Client client;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "client_id")
+//    private Client client;
 }

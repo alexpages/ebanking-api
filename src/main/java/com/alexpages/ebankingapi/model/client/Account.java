@@ -1,12 +1,10 @@
 package com.alexpages.ebankingapi.model.client;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Entity
@@ -18,4 +16,7 @@ public class Account {
     private Integer id;
     private String iban;
     private String currency;
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private Client client;
 }

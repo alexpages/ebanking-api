@@ -23,9 +23,8 @@ public class Client implements UserDetails {
     private Integer id;
     @Column(name="email")
     private String email;
-//    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @OneToMany(targetEntity = Account.class, cascade = CascadeType.ALL)
-    @JoinColumn(name = "client_fk", referencedColumnName = "email")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "client_id")
     private List<Account> accounts;
     private String password;
     @Enumerated(EnumType.STRING)

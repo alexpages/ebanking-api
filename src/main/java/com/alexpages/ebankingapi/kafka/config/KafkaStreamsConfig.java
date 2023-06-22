@@ -1,5 +1,6 @@
 package com.alexpages.ebankingapi.kafka.config;
 
+import com.alexpages.ebankingapi.kafka.streams.KafkaTransactionTopology;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
@@ -26,12 +27,10 @@ public class KafkaStreamsConfig {
 
     @Bean
     public KafkaStreams kafkaStreams(Properties kafkaStreamsProperties){
-        var topology = DebitCreditTopology.buildTopology();
+        var topology = KafkaTransactionTopology.buildTopology();
         var kafkaStreams = new KafkaStreams(topology, kafkaStreamsProperties);
-
         kafkaStreams.start();
         Runtime.getRuntime().addShutdownHook(new Thread(kafkaStreams::close));
-
         return kafkaStreams;
     }
 

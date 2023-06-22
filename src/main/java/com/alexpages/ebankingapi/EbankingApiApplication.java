@@ -16,6 +16,7 @@ public class EbankingApiApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(EbankingApiApplication.class, args);
+
 	}
 	//send message
 	@Bean
@@ -24,7 +25,7 @@ public class EbankingApiApplication {
 				"\"currency\":\"GBP\"," +
 				"\"amount\":\"100\"," +
 				"\"iban\":\"CH93-0000-0000-0000-0000-0\"," +
-				"\"valueDate\":\"01-10-2020\"," +
+				"\"time\":\"01-10-2020\"," +
 				"\"description\":\"Online payment GBP\"}";
 
 		return args -> {kafkaTemplate.send("transaction", jsonToSend);

@@ -18,7 +18,4 @@ public class Account {
     private Integer id;
     private String iban;
     private String currency;
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "client_id")
-//    private Client client;
 }

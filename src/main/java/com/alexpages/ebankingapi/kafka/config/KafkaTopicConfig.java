@@ -10,6 +10,11 @@ public class KafkaTopicConfig {
 
     @Bean
     public NewTopic transactionTopic(){
-        return TopicBuilder.name("transaction").build();
+        return TopicBuilder.name("transactions").build();
+    }
+
+    @Bean
+    public NewTopic ibanTopic(){
+        return TopicBuilder.name("iban").build();
     }
 }

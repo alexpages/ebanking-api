@@ -17,6 +17,4 @@ public class KafkaListener {
         System.out.println("Listener received: "+ transaction.toString());
     }
 
-
-
 }

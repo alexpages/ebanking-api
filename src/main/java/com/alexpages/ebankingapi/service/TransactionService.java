@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -44,7 +45,8 @@ public class TransactionService {
             String messageKey = transaction.getId();
             String messageValue = objectMapper.writeValueAsString(transaction); //Throws JsonProcessingException
             //Send transaction to topic
-            TopicBuilder.name(transactionTopic).partitions(transactionPartitionMonth).build();
+//            TopicBuilder.name(transactionTopic).partitions(12).build();
+
             kafkaTemplate.send(transactionTopic, transactionPartitionMonth, messageKey, messageValue);
             return transaction;
         } catch (JsonProcessingException e) {
@@ -66,7 +68,7 @@ public class TransactionService {
         String kafkaTopic = "transactions-" + year + "-" + clientName;
         int kafkaPartition = month-1;
         TopicPartition partition = new TopicPartition(kafkaTopic, kafkaPartition);
-        kafkaConsumer.assign(Arrays.asList(partition));
+        kafkaConsumer.assign(List.of(partition));
 
         //Obtain data
         List<Transaction> transactionList = new ArrayList<>();

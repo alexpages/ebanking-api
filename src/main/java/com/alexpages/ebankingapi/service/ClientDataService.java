@@ -19,9 +19,9 @@ public class ClientDataService {
     private final AccountRepository accountRepository;
 
     public List<Account> getAccountsByClientUsername(String email) {
-        Optional<Client> client = clientRepository.findByName(email);
+        Optional<Client> client = clientRepository.findClientByName(email);
         if (client.isPresent()) {
-            return accountRepository.findByClient(client.get());
+            return accountRepository.findAccountsByClient(client.get());
         }
         return Collections.emptyList();
     }

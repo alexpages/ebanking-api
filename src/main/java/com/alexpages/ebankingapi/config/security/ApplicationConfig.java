@@ -20,7 +20,7 @@ public class ApplicationConfig {
     private final ClientRepository repository;
     @Bean
     public UserDetailsService userDetailsService(){
-        return username -> repository.findByName(username)
+        return username -> repository.findClientByName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Client not found"));
     }
 

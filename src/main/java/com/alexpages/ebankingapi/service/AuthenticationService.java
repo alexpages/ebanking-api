@@ -27,7 +27,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        Optional<Client> clientOptional = clientRepository.findByName(request.getEmail());
+        Optional<Client> clientOptional = clientRepository.findClientByName(request.getEmail());
         if (clientOptional.isPresent()){
             throw new UserAlreadyPresentException("User with "+ request.getEmail() + " already present in the DB");
         }
@@ -56,7 +56,7 @@ public class AuthenticationService {
                         request.getEmail(),
                         request.getPassword())
         );
-        var client = clientRepository.findByName(request.getEmail())
+        var client = clientRepository.findClientByName(request.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("User by email " + request.getEmail() + " was not found"));
 
         var jwtToken = jwtService.generateToken(client);          //User is obtained and it is returned

@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Integer> {
 
-    List<Account> findByClient(Client client);
+    List<Account> findAccountsByClient(Client client);
 
     @Query("SELECT a.client FROM Account a WHERE a.iban = :iban")
     Client findClientByAccount(@Param("iban") String iban);

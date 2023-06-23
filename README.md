@@ -1,13 +1,19 @@
-banking-api
+Synpulse8 HK - Backend challange - ebanking-api
 -
-This project is intended to be a resolution proposal for Synpulse8 Junior Java Backend position open in Hong Kong.
 ***
 ### About
-The system work as follows:
+This project is intended to be a resolution proposal for Synpulse8 Junior Java Backend vacancy in Hong Kong. The project complies with the following aspects:
+- [x] Spring Boot
+- [x] Spring Security 
+- [x] JWT authentication
+- [x] PostgreSQL for Users and Accounts
+- [x] Kafka Producer/consumer, topic management
+- [x] JUnit
 
-- User will have a token (jwt) and insert it in the request.
-- Api Controller will validate jwt and if correct proceed to fetch data from messaging queue.
-- Transactions are stored in topics within Kafka, it simulates a Real-in-Time data ingestion.
+***
+### Pre-Requisites
+- Java v17
+- Docker
 
 ***
 ### Architecture
@@ -31,7 +37,11 @@ Security has been implemented with the following concepts:
 - Other filters (filterchain)
 
 ***
-### JUnit
+### Future improvements
+
+- [ ] Kafka Streams for filtering
+- [ ] Kafka Tables for updating the balance of each user (Key-Value Store)
+- [ ] Microservice for JWT generation
 
 ****
 

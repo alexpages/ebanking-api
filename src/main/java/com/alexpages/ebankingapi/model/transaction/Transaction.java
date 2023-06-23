@@ -22,6 +22,6 @@ public class Transaction {
     private String iban;                    // Account IBAN (eg. CH93-0000-0000-0000-0000-0)
     @JsonFormat(shape = JsonFormat.Shape.STRING,
             pattern = "dd-MM-yyyy")
-    public Date time;                       // Value date (e.g. 01-10-2020)
+    public Date date;                       // Value date (e.g. 01-10-2020)
     private String description;             // Description (e.g. Online payment CHF)
 }

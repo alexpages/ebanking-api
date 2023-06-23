@@ -1,7 +1,7 @@
+version: '3'
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:6.0.0
-    hostname: zookeeper
+    image: confluentinc/cp-zookeeper:7.4.0
     container_name: zookeeper
     ports:
       - "32181:32181"
@@ -9,22 +9,13 @@ services:
       ZOOKEEPER_CLIENT_PORT: 32181
       ZOOKEEPER_TICK_TIME: 2000
 
-  db:
-    image: postgres:alpine
-    ports:
-      -"5432:5432"
-    environment:
-      POSTGRES_PASSWORD:
-      POSTGRES_DB: jwtsecurity
-
   kafka:
-    image: confluentinc/cp-enterprise-kafka:6.0.0
-    hostname: kafka
+    image: confluentinc/cp-kafka:7.4.0
     container_name: kafka
+    ports:
+      - "9092:9092"
     depends_on:
       - zookeeper
-    ports:
-      - "29092:29092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:32181'
@@ -36,7 +27,7 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
 
   kafka-create-topics:
-    image: confluentinc/cp-enterprise-kafka:6.0.0
+    image: confluentinc/cp-enterprise-kafka:7.4.0
     depends_on:
       - kafka
     hostname: kafka-create-topics
@@ -44,25 +35,41 @@ services:
     working_dir: /scripts
     volumes:
       - ./scripts:/scripts
-
-  app:
-    build:
-      context: .
-      dockerfile: dockerfile
+  db:
+    image: postgres:alpine
     ports:
-      - "8080:8080"
-    depends_on:
-      - db
-      - kafka
+      - "5432:5432"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/jwtsecurity
-      SPRING_DATASOURCE_USERNAME:
-      SPRING_DATASOURCE_PASSWORD:
-      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
-      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
-      SPRING_JPA_SHOW_SQL: "true"
-      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
-      SPRING_JPA_DATABASE: postgresql
-      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      SERVER_ERROR_INCLUDE_MESSAGE: always
+      POSTGRES_PASSWORD:
+      POSTGRES_DB: jwtsecurity
+
+#  expose: 8080
+#  app:
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - db
+#      - kafka
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/jwtsecurity
+#      SPRING_DATASOURCE_USERNAME:
+#      SPRING_DATASOURCE_PASSWORD:
+#      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+#      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+#      SPRING_JPA_SHOW_SQL: "true"
+#      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+#      SPRING_JPA_DATABASE: postgresql
+#      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+#      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+
+
+      #  web:
+      #    container_name: spring-app
+      #    image: spring-app
+      #    depends_on:
+      #      - db
+      #    environment:
+      #      SPRING_DATA_POSTGRESQL_URI: jdbc:postgresql://db:5432/jwtsecurity
+      #      SPRING_DATA_POSTGRESQL_HOST: db
+      #    ports:
+      #      - 8080:8080

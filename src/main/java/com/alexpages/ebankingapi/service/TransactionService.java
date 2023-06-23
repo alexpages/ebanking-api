@@ -1,7 +1,5 @@
 package com.alexpages.ebankingapi.service;
 
-import com.alexpages.ebankingapi.config.kafka.KafkaConsumerConfig;
-import com.alexpages.ebankingapi.config.kafka.KafkaProducerConfig;
 import com.alexpages.ebankingapi.model.transaction.Transaction;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
+import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -25,9 +23,9 @@ public class TransactionService {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final Calendar calendar = Calendar.getInstance();
     private final ClientDataService clientDataService;
+    private final Consumer<String, String> kafkaConsumer;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final RequestControlService requestControlService;
-    private final KafkaConsumerConfig kafkaConsumerConfig;
 
     //PUBLISHER
     public Transaction publishTransactionToTopic(Transaction transaction) throws JsonProcessingException {
@@ -38,7 +36,7 @@ public class TransactionService {
 
         //Get transaction date and obtain topic to be published
         calendar.setTime(transaction.getDate());
-        int transactionPartitionMonth = calendar.get(Calendar.MONTH);                   //will be the partition of the topic
+        int transactionPartitionMonth = calendar.get(Calendar.MONTH)-1;                  //will be the partition of the topic
         int transactionYear = calendar.get(Calendar.YEAR);                              //will help define the topic
         String transactionTopic = "transactions-" + transactionYear + "-" + clientName; //topic
 
@@ -46,6 +44,7 @@ public class TransactionService {
             String messageKey = transaction.getId();
             String messageValue = objectMapper.writeValueAsString(transaction); //Throws JsonProcessingException
             //Send transaction to topic
+            TopicBuilder.name(transactionTopic).partitions(transactionPartitionMonth).build();
             kafkaTemplate.send(transactionTopic, transactionPartitionMonth, messageKey, messageValue);
             return transaction;
         } catch (JsonProcessingException e) {
@@ -59,26 +58,22 @@ public class TransactionService {
         if (!requestControlService.validateYearAndMonth(year, month)) {
             throw new IllegalArgumentException("Review your request, the values of month and date may not be correct");
         }
-
         // Control 2: Check client is valid
         if (!requestControlService.clientIsPresent(clientName)) {
             throw new IllegalArgumentException("Review your request, clientName: "+clientName+" is not present in our Data Base");
         }
-
-        //Create consumer
-        final Consumer<String, String> transactionKafkaConsumer = new KafkaConsumer<>((Map<String, Object>) kafkaConsumerConfig);
-
         //Subscribe to topic
-        String transactionTopic = "transactions-" + year + "-" + clientName;
-        TopicPartition partition = new TopicPartition(transactionTopic, month);
-        transactionKafkaConsumer.assign(Arrays.asList(partition));
+        String kafkaTopic = "transactions-" + year + "-" + clientName;
+        int kafkaPartition = month-1;
+        TopicPartition partition = new TopicPartition(kafkaTopic, kafkaPartition);
+        kafkaConsumer.assign(Arrays.asList(partition));
 
         //Obtain data
         List<Transaction> transactionList = new ArrayList<>();
 
         // Poll for records
-        ConsumerRecords<String, String> consumerRecords = transactionKafkaConsumer.poll(Duration.ofMillis(1000));
-
+        ConsumerRecords<String, String> consumerRecords = kafkaConsumer.poll(Duration.ofMillis(1000));
+        kafkaConsumer.seek(partition, 0);
         while(!consumerRecords.isEmpty()){
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
                 try {
@@ -89,11 +84,11 @@ public class TransactionService {
                 }
             }
             //Poll for more records
-            consumerRecords = transactionKafkaConsumer.poll(Duration.ofMillis(1000));
+            consumerRecords = kafkaConsumer.poll(Duration.ofMillis(1000));
         }
 
         // Close the consumer
-        transactionKafkaConsumer.close();
+        kafkaConsumer.close();
         return transactionList;
         }
     }

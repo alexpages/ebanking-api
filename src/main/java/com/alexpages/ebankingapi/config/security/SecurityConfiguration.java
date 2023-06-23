@@ -34,9 +34,7 @@ public class SecurityConfiguration {
                     auth.requestMatchers("api/v1/transaction/publish").permitAll();  // whitelist requests in the inside pattern/list except the following
                     auth.anyRequest().authenticated();
                 })
-                .sessionManagement((sessionManagement) ->{
-                    sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-                })
+                .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

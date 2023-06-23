@@ -1,11 +1,12 @@
-version: '3'
+version: '3.9'
+
 services:
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
     container_name: zookeeper
     ports:
-      - "32181:32181"
+      - "2181:2181"
 
   kafka:
     image: confluentinc/cp-kafka:7.4.0
@@ -16,33 +17,37 @@ services:
       - zookeeper
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:32181'
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       KAFKA_ADVERTISED_HOST_NAME: kafka
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_ZOOKEPER_CONNECT: zookeper:32181
 
-  db:
+  postgres:
     image: postgres:alpine
+    container_name: postgres
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_PASSWORD:
-      POSTGRES_DB: jwtsecurity
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ebanking_db
 
-  spring-boot-app:
+  ebanking-app:
     container_name: ebanking-app
     build:
       context: .
       dockerfile: Dockerfile
     image: ebanking-app
     restart: always
+    environment:
+      POSTGRES_DB: ebanking_db
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRESQL_PORT: 5432
     ports:
       - "8080:8080"
-    environment:
-      POSTGRESQL_HOST: db
-      POSTGRESQL_USER: admin
-      POSTGRESQL_PASSWORD: password
-      POSTGRESQL_PORT: 5432
     depends_on:
-      - db
+      - postgres
       - kafka
+    links:
+      - postgres

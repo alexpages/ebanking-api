@@ -25,17 +25,34 @@ public class TransactionController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<?> consumeTransactionsFromTopic(@RequestBody TransactionRequest transactionRequest){
+    public ResponseEntity<?> getPaginatedTransactionListByUserAndDate(@RequestBody TransactionRequest transactionRequest){
         //Obtain query parameters
         int month = transactionRequest.getMonth();
         int year = transactionRequest.getYear();
+        int pageSize = transactionRequest.getPageSize();
         String clientName = transactionRequest.getClientName();
         //Call service
         try{
-            return ResponseEntity.ok(transactionService.consumeTransactionsFromTopic(clientName,year,month));
+            return ResponseEntity.ok(transactionService.getPaginatedTransactionListByUserAndDate(pageSize, clientName, year, month));
         } catch (Exception jsonProcessingException){
             return ResponseEntity.status(500).body(jsonProcessingException.getMessage());
         }
     }
+
+
+//
+//    @GetMapping("/")
+//    public ResponseEntity<?> consumeTransactionsFromTopic(@RequestBody TransactionRequest transactionRequest){
+//        //Obtain query parameters
+//        int month = transactionRequest.getMonth();
+//        int year = transactionRequest.getYear();
+//        String clientName = transactionRequest.getClientName();
+//        //Call service
+//        try{
+//            return ResponseEntity.ok(transactionService.consumeTransactionsFromTopic(clientName,year,month));
+//        } catch (Exception jsonProcessingException){
+//            return ResponseEntity.status(500).body(jsonProcessingException.getMessage());
+//        }
+//    }
 
 }

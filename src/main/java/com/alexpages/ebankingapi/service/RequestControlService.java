@@ -10,8 +10,9 @@ import java.time.YearMonth;
 @RequiredArgsConstructor
 public class RequestControlService {
 
-    private final ClientDataService clientDataService;
-
+//    private final AccountService accountService;
+//    private final
+//
     public boolean validateYearAndMonth(int year, int month) {
         try {
             YearMonth yearMonth = YearMonth.of(year, month);
@@ -20,15 +21,15 @@ public class RequestControlService {
             return false;
         }
     }
-
-    public boolean clientIsPresent(String client){
-        try{
-            clientIsPresent(client);
-            return true;
-        } catch (Exception e){
-            return false;
-        }
-    }
+//
+//    public boolean clientIsPresent(String client){
+//        try{
+//            accountService.clientIsPresent(client);
+//            return true;
+//        } catch (Exception e){
+//            return false;
+//        }
+//    }
 
 
 

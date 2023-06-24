@@ -13,13 +13,21 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ClientDataService {
+public class AccountService {
 
-    private final ClientRepository clientRepository;
     private final AccountRepository accountRepository;
+    private final ClientService clientService;
+
+    public List<Account> findAccountsByClient(Client client){
+        return accountRepository.findAccountsByClient(client);
+    }
+
+    public Client findClientByAccount(String iban){
+        return accountRepository.findClientByAccount(iban);
+    }
 
     public List<Account> getAccountsByClientUsername(String email) {
-        Optional<Client> client = clientRepository.findClientByName(email);
+        Optional<Client> client = clientService.findClientByName(email);
         if (client.isPresent()) {
             return accountRepository.findAccountsByClient(client.get());
         }

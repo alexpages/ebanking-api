@@ -8,7 +8,10 @@ This project is intended to be a resolution proposal for Synpulse8 Junior Java B
 - [x] JWT authentication
 - [x] PostgreSQL for Users and Accounts
 - [x] Kafka Producer/consumer, topic management
-- [x] JUnit
+- [x] REST Controller with open endpoints
+- [ ] JUnit
+- [ ] Logging and monitoring support
+
 
 ***
 ### Pre-Requisites
@@ -39,6 +42,7 @@ Security has been implemented with the following concepts:
 ***
 ### Future improvements
 
+- [x] Implement Custom Serdes for Kafka Streams
 - [ ] Kafka Streams for filtering
 - [ ] Kafka Tables for updating the balance of each user (Key-Value Store)
 - [ ] Microservice for JWT generation

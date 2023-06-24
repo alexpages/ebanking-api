@@ -22,12 +22,13 @@ import java.util.stream.Collectors;
 public class AuthenticationService {
 
     private final ClientRepository clientRepository;    //save client
+    private final ClientService clientService;
     private final PasswordEncoder passwordEncoder;      //encode pass to save onto repo
     private final JwtService jwtService;                //for generating token
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        Optional<Client> clientOptional = clientRepository.findClientByName(request.getEmail());
+        Optional<Client> clientOptional = clientService.findClientByName(request.getEmail());
         if (clientOptional.isPresent()){
             throw new UserAlreadyPresentException("User with "+ request.getEmail() + " already present in the DB");
         }
@@ -44,7 +45,7 @@ public class AuthenticationService {
                 .role(Role.USER)
                 .accounts(accounts)
                 .build();
-        clientRepository.save(client);
+        clientService.addClient(client);
 
         var jwtToken = jwtService.generateToken(client);
         return AuthenticationResponse.builder().token(jwtToken).build(); //Generate token and save it
@@ -56,7 +57,7 @@ public class AuthenticationService {
                         request.getEmail(),
                         request.getPassword())
         );
-        var client = clientRepository.findClientByName(request.getEmail())
+        var client = clientService.findClientByName(request.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("User by email " + request.getEmail() + " was not found"));
 
         var jwtToken = jwtService.generateToken(client);          //User is obtained and it is returned

@@ -27,11 +27,11 @@ public class Client implements UserDetails {
     private List<Account> accounts;
     private String password;
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private ClientRole clientRole;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(new SimpleGrantedAuthority(clientRole.name()));
     }
 
     @Override

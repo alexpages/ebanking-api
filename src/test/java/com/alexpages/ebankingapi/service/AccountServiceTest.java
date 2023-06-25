@@ -1,46 +1,50 @@
-package com.alexpages.ebankingapi.model;
+package com.alexpages.ebankingapi.service;
 
 import com.alexpages.ebankingapi.model.account.Account;
 import com.alexpages.ebankingapi.model.account.AccountRepository;
 import com.alexpages.ebankingapi.model.client.Client;
-import com.alexpages.ebankingapi.model.client.ClientRepository;
 import com.alexpages.ebankingapi.model.client.ClientRole;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-
-@DataJpaTest
 @ExtendWith(MockitoExtension.class)
-class AccountRepositoryTest {
+class AccountServiceTest {
 
-    @Autowired
-    private AccountRepository underTest;
 
-    @Autowired
-    private ClientRepository clientRepository;
+    @Mock AccountRepository accountRepository;
+    @InjectMocks
+    private AccountService underTest;
+
 
     @Test
-    void itShouldFindAccountsByClient() throws JsonProcessingException {
-        // GIVEN
-
+    void itShouldFindAccountsByClient() {
+        // Given
         Client testClient = generateTestClient();
-        Client savedClient = clientRepository.save(testClient);
 
-        // WHEN
-        List<Account> accounts = underTest.findAccountsByClient(savedClient);
+        // When
+        underTest.findAccountsByClient(testClient);
 
-        // THEN
-        assertThat(accounts).isNotNull();
+        // Then
+        verify(accountRepository).findAccountsByClient(testClient);
+
     }
 
     private Client generateTestClient() {
@@ -61,5 +65,6 @@ class AccountRepositoryTest {
         testClient.setAccounts(accounts);
         return testClient;
     }
+
 
 }

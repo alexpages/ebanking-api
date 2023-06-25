@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class Transaction {
 

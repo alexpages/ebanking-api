@@ -25,7 +25,6 @@ public class JwtService {
 
     public String extractUsername(String jwtToken) {
         return extractClaim(jwtToken, Claims::getSubject);
-        //Subject is the email but for naming convention with spring boot we use Username
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
@@ -42,7 +41,7 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(clientDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+1000*60*24)) //expiration can be modified
+                .setExpiration(new Date(System.currentTimeMillis()+1000*60*24)) //expiration = 1 day
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -70,8 +69,9 @@ public class JwtService {
     }
 
     private Key getSigningKey() {
+        // Sha Algorithm
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
-        return Keys.hmacShaKeyFor(keyBytes); //sha is the algorithm
+        return Keys.hmacShaKeyFor(keyBytes);
 
     }
 }

@@ -1,6 +1,6 @@
 package com.alexpages.ebankingapi.model.client;
 
-public enum Role {
+public enum ClientRole {
     USER,
     ADMIN
 }

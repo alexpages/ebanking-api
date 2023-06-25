@@ -5,9 +5,9 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class TransactionRequest {
+@NoArgsConstructor
+public class TransactionControllerRequest {
     private String clientName;
     private int year;
     private int month;

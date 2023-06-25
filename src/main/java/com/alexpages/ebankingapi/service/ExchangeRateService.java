@@ -2,6 +2,8 @@ package com.alexpages.ebankingapi.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,16 +21,18 @@ public class ExchangeRateService {
     private String api_key;
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    private static final Logger logger = LoggerFactory.getLogger(ExchangeRateService.class);
+
     public String getCurrentExchangeRateBaseUSD() {
         String string_url = "https://api.currencyfreaks.com/v2.0/rates/latest?apikey=" + api_key;
         try {
-            //Connect to URL
+            // Connect to URL
             URL url = new URL(string_url);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             int httpResponseCode = connection.getResponseCode();
 
-            //Read response
+            // Read
             StringBuilder sb = new StringBuilder();
             if (httpResponseCode == HttpURLConnection.HTTP_OK) {
                 BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -40,8 +44,9 @@ public class ExchangeRateService {
                 return sb.toString();
             }
         } catch (IOException e) {
-            //TODO -> throw a custom exception, etc.)
-            e.printStackTrace();
+            // Log
+            logger.error("Failed to fetch external exchange rate api");
+            throw new RuntimeException(e);
         }
         return null;
     }

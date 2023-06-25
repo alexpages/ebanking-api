@@ -4,10 +4,12 @@ import com.alexpages.ebankingapi.exceptions.UserAlreadyPresentException;
 import com.alexpages.ebankingapi.exceptions.UserNotFoundException;
 import com.alexpages.ebankingapi.model.account.Account;
 import com.alexpages.ebankingapi.model.client.*;
-import com.alexpages.ebankingapi.utils.auth.AuthenticationRequest;
+import com.alexpages.ebankingapi.utils.auth.AuthenticateRequest;
 import com.alexpages.ebankingapi.utils.auth.AuthenticationResponse;
 import com.alexpages.ebankingapi.utils.auth.RegisterRequest;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,18 +23,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AuthenticationService {
 
-    private final ClientRepository clientRepository;    //save client
     private final ClientService clientService;
-    private final PasswordEncoder passwordEncoder;      //encode pass to save onto repo
-    private final JwtService jwtService;                //for generating token
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
     public AuthenticationResponse register(RegisterRequest request) {
         Optional<Client> clientOptional = clientService.findClientByName(request.getEmail());
         if (clientOptional.isPresent()){
-            throw new UserAlreadyPresentException("User with "+ request.getEmail() + " already present in the DB");
+            // Log
+            String errorMessage = "Client with username " + request.getEmail() + " already present in the DB";
+            logger.error(errorMessage);
+            throw new UserAlreadyPresentException(errorMessage);
         }
         String encodedPassword = passwordEncoder.encode(request.getPassword());
+        // Log
+        logger.debug("Password has been encoded");
         List<Account> accounts = request.getAccounts().stream()
                 .map(account -> Account.builder()
                         .iban(account.getIban())
@@ -42,26 +50,28 @@ public class AuthenticationService {
         Client client = Client.builder()
                 .name(request.getEmail())
                 .password(encodedPassword)
-                .role(Role.USER)
+                .clientRole(ClientRole.USER)
                 .accounts(accounts)
                 .build();
         clientService.addClient(client);
-
         var jwtToken = jwtService.generateToken(client);
-        return AuthenticationResponse.builder().token(jwtToken).build(); //Generate token and save it
+        // Log
+        logger.info("Client registered successfully: {}", client);
+        return AuthenticationResponse.builder().token(jwtToken).build();
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public AuthenticationResponse authenticate(AuthenticateRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword())
         );
         var client = clientService.findClientByName(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("User by email " + request.getEmail() + " was not found"));
-
-        var jwtToken = jwtService.generateToken(client);          //User is obtained and it is returned
-        return AuthenticationResponse.builder().token(jwtToken).build(); //Auth response
+                .orElseThrow(() -> new UserNotFoundException("Client by email " + request.getEmail() + " was not found"));
+        var jwtToken = jwtService.generateToken(client);
+        // Log
+        logger.info("Client authenticated successfully: {}", client);
+        return AuthenticationResponse.builder().token(jwtToken).build();
     }
 
 }

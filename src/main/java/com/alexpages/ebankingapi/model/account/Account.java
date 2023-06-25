@@ -4,12 +4,12 @@ import com.alexpages.ebankingapi.model.client.Client;
 import jakarta.persistence.*;
 import lombok.*;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
+
+@Data
 @Entity
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "accounts")
 public class Account {
     @Id

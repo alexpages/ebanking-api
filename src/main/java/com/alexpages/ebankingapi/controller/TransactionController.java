@@ -3,7 +3,7 @@ package com.alexpages.ebankingapi.controller;
 
 import com.alexpages.ebankingapi.model.transaction.Transaction;
 import com.alexpages.ebankingapi.service.TransactionService;
-import com.alexpages.ebankingapi.utils.TransactionRequest;
+import com.alexpages.ebankingapi.utils.TransactionControllerRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,12 +25,12 @@ public class TransactionController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<?> getPaginatedTransactionListByUserAndDate(@RequestBody TransactionRequest transactionRequest){
+    public ResponseEntity<?> getPaginatedTransactionListByUserAndDate(@RequestBody TransactionControllerRequest transactionControllerRequest){
         //Obtain query parameters
-        int month = transactionRequest.getMonth();
-        int year = transactionRequest.getYear();
-        int pageSize = transactionRequest.getPageSize();
-        String clientName = transactionRequest.getClientName();
+        int month = transactionControllerRequest.getMonth();
+        int year = transactionControllerRequest.getYear();
+        int pageSize = transactionControllerRequest.getPageSize();
+        String clientName = transactionControllerRequest.getClientName();
         //Call service
         try{
             return ResponseEntity.ok(transactionService.getPaginatedTransactionListByUserAndDate(pageSize, clientName, year, month));
@@ -42,7 +42,7 @@ public class TransactionController {
 
 //
 //    @GetMapping("/")
-//    public ResponseEntity<?> consumeTransactionsFromTopic(@RequestBody TransactionRequest transactionRequest){
+//    public ResponseEntity<?> consumeTransactionsFromTopic(@RequestBody TransactionControllerRequest transactionRequest){
 //        //Obtain query parameters
 //        int month = transactionRequest.getMonth();
 //        int year = transactionRequest.getYear();

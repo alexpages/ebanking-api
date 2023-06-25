@@ -10,8 +10,8 @@ import java.util.List;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class RegisterRequest {
     private String email;
     private List<Account> accounts;

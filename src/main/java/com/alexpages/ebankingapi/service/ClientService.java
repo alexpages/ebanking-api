@@ -21,5 +21,9 @@ public class ClientService {
         return clientRepository.save(client);
     }
 
+    public Client findClientByAccount(String iban){
+        return clientRepository.findClientByAccount(iban);
+    }
+
 
 }

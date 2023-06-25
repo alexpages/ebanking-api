@@ -2,7 +2,7 @@ package com.alexpages.ebankingapi.service;
 
 import com.alexpages.ebankingapi.model.transaction.Transaction;
 import com.alexpages.ebankingapi.utils.PaginatedList;
-import com.alexpages.ebankingapi.utils.TransactionResponse;
+import com.alexpages.ebankingapi.utils.TransactionControllerResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,11 +11,11 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.TopicPartition;
-import org.springframework.data.domain.Page;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.*;
 
@@ -23,24 +23,26 @@ import java.util.*;
 @RequiredArgsConstructor
 public class TransactionService {
 
-    //Acts as a publisher and a subscriber(consumer)
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final AccountService accountService;
     private final ClientService clientService;
     private final Calendar calendar = Calendar.getInstance();
     private final Consumer<String, String> kafkaConsumer;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final RequestControlService requestControlService;
+    private final ValidateDataService validateDataService;
     private final ExchangeRateService exchangeRateService;
 
-    //PUBLISHER
+    private static final Logger logger = LoggerFactory.getLogger(TransactionService.class);
+
+    // PUBLISHER
+
     public Transaction publishTransactionToTopic(Transaction transaction){
-        //Schema: topic = year+client, partition = month -> 12 topics per client
-        String clientName = accountService
-                .getClientByAccount(transaction.getIban())
+        // Schema: topic = year+client, partition = month -> 12 topics per client
+        String clientName = clientService
+                .findClientByAccount(transaction.getIban())
                 .getUsername();
 
-        //Get transaction date and obtain topic to be published
+        // Get transaction date and obtain topic to be published
         calendar.setTime(transaction.getDate());
         int transactionPartitionMonth = calendar.get(Calendar.MONTH);                   //will be the partition of the topic
         int transactionYear = calendar.get(Calendar.YEAR);                              //will help define the topic
@@ -49,16 +51,21 @@ public class TransactionService {
         try {
             String messageKey = transaction.getId();
             String messageValue = objectMapper.writeValueAsString(transaction);
-            //Send transaction to topic
+            // Send transaction to topic
             kafkaTemplate.send(transactionTopic, transactionPartitionMonth, messageKey, messageValue);
+            // Log
+            logger.info("Transaction {} has been published", transaction);
             return transaction;
         } catch (JsonProcessingException e) {
+            // Log
+            logger.error("Transaction {} could not be published", transaction);
             throw new RuntimeException(e);          //Always runtime exception
         }
     }
 
-    //CONSUMER
-    public TransactionResponse getPaginatedTransactionListByUserAndDate(int pageSize, String clientName, int year, int month){
+    // CONSUMER
+
+    public TransactionControllerResponse getPaginatedTransactionListByUserAndDate(int pageSize, String clientName, int year, int month){
         List<Transaction> transactionList = consumeTransactionsFromTopic(clientName,year,month);
         int transactionAmount = transactionList.size();
         int requiredPages = (int) Math.ceil((double) transactionAmount / pageSize);
@@ -67,7 +74,7 @@ public class TransactionService {
         int beginning = 0;
         int end = pageSize;
 
-        //Windowed approach
+        // Windowed approach
         for (int i = 0; i< requiredPages; i++){
             List<Transaction> transactionsOfPage = transactionList.subList(beginning, Math.min(end, transactionAmount));
             int currentPageNo = i+1;
@@ -77,20 +84,20 @@ public class TransactionService {
                     .pageNo(currentPageNo)
                     .build();
             paginatedLists.add(paginatedList);
-
             beginning = end;
             end  = Math.min(end + pageSize, transactionAmount);
         }
-        TransactionResponse transactionResponse = TransactionResponse.builder()
+        TransactionControllerResponse transactionControllerResponse = TransactionControllerResponse.builder()
                 .pageSize(pageSize)
                 .content(paginatedLists)
                 .totalPages(requiredPages)
                 .build();
-        return transactionResponse;
+        logger.info("Paginated transactions list has been obtained");
+        return transactionControllerResponse;
     }
 
     public float calculateDebitCreditScore (List<Transaction> transactions){
-        //According to API provider, base currency is USD
+        // According to API provider, base currency is USD
         String currencyRates = exchangeRateService.getCurrentExchangeRateBaseUSD();
         float debit_credit_score = 0;
         try{
@@ -103,28 +110,37 @@ public class TransactionService {
                 if (responseJson.get("base").asText() == "USD"){
                     debit_credit_score+=currentAmount;
                 }
-
                 JsonNode rates = responseJson.get("rates");
                 String exchangeRateString = rates.get(currentCurrency).asText();
                 double rate = Double.parseDouble(exchangeRateString);
                 debit_credit_score+=currentAmount*rate;
             }
-            //Limit 2 decimals
+            // Limit decimals
             return (debit_credit_score*100)/100;
 
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);          //Always runtime exception
+            // Log
+            logger.error("Failed to calculate the Debit/Credit score");
+            logger.debug("Failed to map Json to currency rates");
+            throw new RuntimeException(e);
         }
     }
 
     public List<Transaction> consumeTransactionsFromTopic(String clientName, int year, int month){
-        //Control 1: Check year and month is valid
-        if (!requestControlService.validateYearAndMonth(year, month)) {
-            throw new IllegalArgumentException("Review your request, the values of month and date may not be correct");
+        if (!validateDataService.validateYear(year)) {
+            // Log
+            logger.error("Year value {} from request is invalid", year);
+            throw new IllegalArgumentException();
         }
-        //Control 2: Check client is valid
+        if (!validateDataService.validateMonth(month)) {
+            // Log
+            logger.error("The month value {} from request is invalid", month);
+            throw new IllegalArgumentException();
+        }
         if (clientService.findClientByName(clientName).isEmpty()) {
-            throw new IllegalArgumentException("Review your request, clientName: "+clientName+" is not present in our Data Base");
+            // Log
+            logger.error("Client by username {} is not found in the DB", clientName);
+            throw new IllegalArgumentException();
         }
         //Subscribe to topic
         String kafkaTopic = "transactions-" + year + "-" + clientName;
@@ -136,8 +152,7 @@ public class TransactionService {
         //Obtain data
         List<Transaction> transactionList = new ArrayList<>();
 
-        //Poll for records
-        //Reposition consumer to the beginning (0) of the 'partition'
+        //Poll for records starting from beginning (0) of the partition
         kafkaConsumer.seek(partition, 0);
         ConsumerRecords<String, String> consumerRecords = kafkaConsumer.poll(Duration.ofMillis(1000));
         do{
@@ -146,7 +161,10 @@ public class TransactionService {
                     Transaction transaction = objectMapper.readValue(consumerRecord.value(), Transaction.class);
                     transactionList.add(transaction);
                 } catch (JsonProcessingException e) {
-                    throw new RuntimeException("Error processing transaction record.", e);
+                    // Log
+                    logger.error("Kafka Consumer failed to read Kafka from topic");
+                    logger.debug("Failed to map Json to Transaction");
+                    throw new RuntimeException(e);
                 }
             }
             //Poll for more records

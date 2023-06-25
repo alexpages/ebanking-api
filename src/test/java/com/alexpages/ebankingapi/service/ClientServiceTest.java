@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,13 +24,8 @@ import static org.mockito.Mockito.*;
 class ClientServiceTest {
 
     @Mock private ClientRepository clientRepository;
+    @InjectMocks
     private ClientService underTest;
-
-    @BeforeEach
-    void setup() {
-        MockitoAnnotations.openMocks(this);
-        underTest = new ClientService(clientRepository);
-    }
 
     @Test
     void canAddClient() {
@@ -52,9 +48,9 @@ class ClientServiceTest {
         // Given
         Client testClient = generateTestClient();
         Optional<Client> expectedClient = Optional.of(testClient);
-        when(clientRepository.findClientByName(testClient.getName())).thenReturn(Optional.ofNullable(testClient));
 
         // When
+        when(clientRepository.findClientByName(testClient.getName())).thenReturn(Optional.ofNullable(testClient));
         Optional<Client> foundClient = underTest.findClientByName(testClient.getName());
 
         // Then

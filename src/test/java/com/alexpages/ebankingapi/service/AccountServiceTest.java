@@ -28,8 +28,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class AccountServiceTest {
 
+    @Mock private AccountRepository accountRepository;
+    @Mock private ClientService clientService;
 
-    @Mock AccountRepository accountRepository;
     @InjectMocks
     private AccountService underTest;
 
@@ -38,13 +39,14 @@ class AccountServiceTest {
     void itShouldFindAccountsByClient() {
         // Given
         Client testClient = generateTestClient();
-
+        clientService.addClient(testClient);
         // When
-        underTest.findAccountsByClient(testClient);
+        when(underTest.findAccountsByClient(testClient)).thenReturn(testClient.getAccounts());
+        List<Account> foundAccounts = underTest.findAccountsByClient(testClient);
 
         // Then
         verify(accountRepository).findAccountsByClient(testClient);
-
+        assertEquals(testClient.getAccounts(), foundAccounts);
     }
 
     private Client generateTestClient() {

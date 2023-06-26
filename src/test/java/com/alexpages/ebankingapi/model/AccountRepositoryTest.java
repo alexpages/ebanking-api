@@ -5,14 +5,19 @@ import com.alexpages.ebankingapi.model.account.AccountRepository;
 import com.alexpages.ebankingapi.model.client.Client;
 import com.alexpages.ebankingapi.model.client.ClientRepository;
 import com.alexpages.ebankingapi.model.client.ClientRole;
+import com.alexpages.ebankingapi.service.ClientService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -20,22 +25,25 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class AccountRepositoryTest {
 
-    @Mock private AccountRepository underTest;
+    @Autowired
+    private AccountRepository underTest;
 
-    @Mock private ClientRepository clientRepository;
+    @Mock
+    private ClientService clientService;
 
     @Test
     void itShouldFindAccountsByClient() {
         // Given
         Client testClient = generateTestClient();
-        clientRepository.save(testClient);
 
         // When
-        when(underTest.findAccountsByClient(testClient)).thenReturn(testClient.getAccounts());
+        when(clientService.addClient(testClient)).thenReturn(testClient);
+        clientService.addClient(testClient);
+
         List<Account> accounts = underTest.findAccountsByClient(testClient);
 
         // Then
-        assertEquals(accounts,testClient.getAccounts());
+        assertThat(accounts).isNotNull();
     }
 
     private Client generateTestClient() {

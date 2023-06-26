@@ -10,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
@@ -50,12 +49,30 @@ class ClientServiceTest {
         Optional<Client> expectedClient = Optional.of(testClient);
 
         // When
-        when(clientRepository.findClientByName(testClient.getName())).thenReturn(Optional.ofNullable(testClient));
+        when(underTest.findClientByName(testClient.getName())).thenReturn(Optional.ofNullable(testClient));
         Optional<Client> foundClient = underTest.findClientByName(testClient.getName());
 
         // Then
+        verify(clientRepository).findClientByName(testClient.getName());
         assertThat(foundClient).isEqualTo(expectedClient);
     }
+
+    @Test
+    void itShouldFindClientByAccount() {
+        // Given
+        Client testClient = generateTestClient();
+        Optional<Client> expectedClient = Optional.of(testClient);
+
+        // When
+        when(clientRepository.findClientByAccount(testClient.getAccounts().get(0).getIban()))
+                .thenReturn(testClient);
+        Optional<Client> foundClient = Optional.ofNullable(underTest.findClientByAccount(testClient.getAccounts().get(0).getIban()));
+
+        // Then
+        verify(clientRepository).findClientByAccount(testClient.getAccounts().get(0).getIban());
+        assertThat(foundClient).isEqualTo(expectedClient);
+    }
+
     private Client generateTestClient() {
         Client testClient = Client.builder()
                 .clientRole(ClientRole.USER)
@@ -74,8 +91,4 @@ class ClientServiceTest {
         testClient.setAccounts(accounts);
         return testClient;
     }
-
-
-
-
 }

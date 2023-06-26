@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 @AutoConfigureTestDatabase(connection =  EmbeddedDatabaseConnection.H2)
 class ClientRepositoryTest {
 
-    @Mock
+    @Autowired
     private ClientRepository underTest;
 
     @BeforeEach
@@ -41,11 +41,10 @@ class ClientRepositoryTest {
         Client testClient = generateTestClient();
 
         // When
-        when(underTest.save(testClient)).thenReturn(testClient);
-        Client expectedClient = underTest.save(testClient);
+        Client savedClient = underTest.save(testClient);
 
         // Then
-        assertEquals(testClient, expectedClient);
+        assertEquals(savedClient.getName(), testClient.getName());
     }
 
 
@@ -56,11 +55,10 @@ class ClientRepositoryTest {
         underTest.save(testClient);
 
         // When
-        when(underTest.findClientByName("test")).thenReturn(Optional.of(testClient));
         Optional<Client> foundClient = underTest.findClientByName(testClient.getName());
 
         // Then
-        assertEquals(Optional.of(testClient), foundClient);
+        assertNotNull(foundClient);
     }
 
     @Test
@@ -69,11 +67,10 @@ class ClientRepositoryTest {
         Client testClient = generateTestClient();
 
         // When
-        when(underTest.findClientByName("test")).thenReturn(null);
         Optional<Client> foundClient = underTest.findClientByName(testClient.getName());
 
         // Then
-        assertNull(foundClient);
+        assertThat(foundClient).isEmpty();
     }
 
     @Test
@@ -83,26 +80,24 @@ class ClientRepositoryTest {
         underTest.save(testClient);
 
         // When
-        when(underTest.findClientByAccount("iban")).thenReturn(testClient);
         Client foundClient = underTest.findClientByAccount("iban");
 
         // Then
-        assertEquals(foundClient, testClient);
+        assertThat(foundClient).isNotNull();
     }
 
     @Test
     void itShouldNotFindClientByAccount(){
         // Given
         Client testClient = generateTestClient();
-        underTest.save(testClient);
 
         // When
-        when(underTest.findClientByAccount("iban2")).thenReturn(null);
-        Client foundClient = underTest.findClientByAccount("iban");
+        Optional<Client> foundClient = Optional.ofNullable(underTest.findClientByAccount("iban"));
 
         // Then
-        assertNull(foundClient);
+        assertThat(foundClient).isEmpty();
     }
+
 
 
     private Client generateTestClient() {

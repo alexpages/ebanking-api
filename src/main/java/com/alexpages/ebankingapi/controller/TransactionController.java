@@ -3,7 +3,7 @@ package com.alexpages.ebankingapi.controller;
 
 import com.alexpages.ebankingapi.model.transaction.Transaction;
 import com.alexpages.ebankingapi.service.TransactionService;
-import com.alexpages.ebankingapi.utils.TransactionControllerRequest;
+import com.alexpages.ebankingapi.utils.transaction.TransactionControllerRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

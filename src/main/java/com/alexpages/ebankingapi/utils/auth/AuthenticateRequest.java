@@ -11,8 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthenticateRequest {
-    private String email;
+    private String clientName;
     private String password;
-    private List<Account> accounts;
-
 }

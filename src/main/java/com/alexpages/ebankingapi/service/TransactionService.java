@@ -1,8 +1,8 @@
 package com.alexpages.ebankingapi.service;
 
 import com.alexpages.ebankingapi.model.transaction.Transaction;
-import com.alexpages.ebankingapi.utils.PaginatedList;
-import com.alexpages.ebankingapi.utils.TransactionControllerResponse;
+import com.alexpages.ebankingapi.utils.transaction.PaginatedList;
+import com.alexpages.ebankingapi.utils.transaction.TransactionControllerResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +24,6 @@ import java.util.*;
 public class TransactionService {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
-    private final AccountService accountService;
     private final ClientService clientService;
     private final Calendar calendar = Calendar.getInstance();
     private final Consumer<String, String> kafkaConsumer;

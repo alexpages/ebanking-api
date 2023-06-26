@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterRequest {
-    private String email;
+    private String clientName;
     private List<Account> accounts;
     private String password;
 }

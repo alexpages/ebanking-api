@@ -10,6 +10,7 @@ import com.alexpages.ebankingapi.utils.auth.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,10 +32,10 @@ public class AuthenticationService {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
     public AuthenticationResponse register(RegisterRequest request) {
-        Optional<Client> clientOptional = clientService.findClientByName(request.getEmail());
+        Optional<Client> clientOptional = clientService.findClientByName(request.getClientName());
         if (clientOptional.isPresent()){
             // Log
-            String errorMessage = "Client with username " + request.getEmail() + " already present in the DB";
+            String errorMessage = "Client with username: " + request.getClientName() + " ,could not be registered because it is already present in the DB";
             logger.error(errorMessage);
             throw new UserAlreadyPresentException(errorMessage);
         }
@@ -48,7 +49,7 @@ public class AuthenticationService {
                         .build())
                 .collect(Collectors.toList());
         Client client = Client.builder()
-                .name(request.getEmail())
+                .name(request.getClientName())
                 .password(encodedPassword)
                 .clientRole(ClientRole.USER)
                 .accounts(accounts)
@@ -63,11 +64,11 @@ public class AuthenticationService {
     public AuthenticationResponse authenticate(AuthenticateRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
+                        request.getClientName(),
                         request.getPassword())
         );
-        var client = clientService.findClientByName(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("Client by email " + request.getEmail() + " was not found"));
+        var client = clientService.findClientByName(request.getClientName())
+                .orElseThrow(() -> new UserNotFoundException("Client with username: " + request.getClientName() + " ,could not be authenticated because it has not been registered yet"));
         var jwtToken = jwtService.generateToken(client);
         // Log
         logger.info("Client authenticated successfully: {}", client);

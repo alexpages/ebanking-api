@@ -19,7 +19,8 @@ public class ExchangeRateService {
 
     @Value("${EXCHANGE_RATE_KEY}")
     private String api_key;
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private HttpURLConnection httpURLConnection;
+
 
     private static final Logger logger = LoggerFactory.getLogger(ExchangeRateService.class);
 

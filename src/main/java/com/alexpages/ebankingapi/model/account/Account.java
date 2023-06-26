@@ -20,4 +20,5 @@ public class Account {
     @ManyToOne
     @JoinColumn(name = "client_id")
     private Client client;
+
 }

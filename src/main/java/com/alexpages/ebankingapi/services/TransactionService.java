@@ -38,8 +38,7 @@ public class TransactionService {
 
     public Transaction publishTransactionToTopic(Transaction transaction){
         // Schema: topic = year+client, partition = month -> 12 topics per client
-        Client client = clientService.findClientByAccount(transaction.getIban());
-        String clientName = client.getUsername();
+        String clientName = clientService.findClientNameByAccount(transaction.getIban());
 
         // Get transaction date and obtain topic to be published
         calendar.setTime(transaction.getDate());

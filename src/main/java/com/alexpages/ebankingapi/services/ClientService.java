@@ -25,5 +25,9 @@ public class ClientService {
         return clientRepository.findClientByAccount(iban);
     }
 
+    //TODO test it
+    public String findClientNameByAccount(String iban){
+        return findClientByAccount(iban).getUsername();
+    }
 
 }

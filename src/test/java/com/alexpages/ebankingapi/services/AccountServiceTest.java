@@ -4,11 +4,15 @@ import com.alexpages.ebankingapi.models.account.Account;
 import com.alexpages.ebankingapi.models.account.AccountRepository;
 import com.alexpages.ebankingapi.models.client.Client;
 import com.alexpages.ebankingapi.models.client.ClientRole;
+import jakarta.annotation.Priority;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 class AccountServiceTest {
 
@@ -26,12 +31,16 @@ class AccountServiceTest {
 
     @InjectMocks
     private AccountService underTest;
+    private Client testClient;
 
+    @BeforeEach
+    void setUp(){
+        testClient = generateTestClient();
+    }
 
     @Test
     void itShouldFindAccountsByClient() {
         // Given
-        Client testClient = generateTestClient();
         clientService.addClient(testClient);
         // When
         when(underTest.findAccountsByClient(testClient)).thenReturn(testClient.getAccounts());

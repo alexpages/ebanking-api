@@ -16,8 +16,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    private final JwtAuthenticationFilter jwtAuthFilter;    //automatically injected by spring
-    private AuthenticationProvider authenticationProvider;  //automatically injected by spring
+    private final JwtAuthenticationFilter jwtAuthFilter;
+    private AuthenticationProvider authenticationProvider;
 
     @Autowired
     public SecurityConfiguration(JwtAuthenticationFilter jwtAuthFilter, AuthenticationProvider authenticationProvider) {
@@ -30,8 +30,7 @@ public class SecurityConfiguration {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((auth) ->{
-                    // whitelist requests in the inside pattern/list except the following
-                    auth.requestMatchers("/api/v1/auth/**","/v3/api-docs/**", "/swagger-ui/**").permitAll();
+                    auth.requestMatchers("/api/v1/auth/**","/v3/api-docs/**", "/swagger-ui/**").permitAll(); //whitelist endpoints
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

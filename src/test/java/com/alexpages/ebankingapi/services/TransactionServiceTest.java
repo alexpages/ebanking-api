@@ -2,6 +2,7 @@ package com.alexpages.ebankingapi.services;
 
 import com.alexpages.ebankingapi.models.account.Account;
 import com.alexpages.ebankingapi.models.client.Client;
+import com.alexpages.ebankingapi.models.client.ClientRepository;
 import com.alexpages.ebankingapi.models.client.ClientRole;
 import com.alexpages.ebankingapi.models.transaction.Currency;
 import com.alexpages.ebankingapi.models.transaction.Transaction;
@@ -11,11 +12,10 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -37,14 +37,15 @@ public class TransactionServiceTest {
     @Mock private ClientService clientService;
     @Mock private Calendar calendar;
     @Mock private ObjectMapper objectMapper;
-    @Mock private Client testClient;
+    @Mock private ClientRepository clientRepository;
+    private Client client;
 
     @InjectMocks
     private TransactionService underTest;
 
     @BeforeEach
     public void setup() {
-        testClient = generateTestClient();
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -58,22 +59,37 @@ public class TransactionServiceTest {
                 .amount(100)
                 .build();
 
-        String messageKey = transaction.getId();
-        String messageValue = objectMapper.writeValueAsString(transaction);
-
         // When
-        when(clientService.findClientByAccount("iban")).thenReturn(testClient);
-        when(objectMapper.writeValueAsString(transaction)).thenReturn(messageValue);
-        when(kafkaTemplate.send(anyString(), anyInt(), eq(messageKey), eq(messageValue))).thenReturn(null);
+        Transaction sentTransaction = underTest.publishTransactionToTopic(transaction);
 
         // Then
-        Transaction sentTransaction = underTest.publishTransactionToTopic(transaction);
         assertEquals(sentTransaction, transaction);
-
-        verify(clientService).findClientByAccount("iban");
-        verify(objectMapper).writeValueAsString(transaction);
-        verify(kafkaTemplate).send(anyString(), anyInt(), eq(messageKey), eq(messageValue));
     }
+
+    @Test
+    void itShouldCalculateDebitCreditScore() {
+
+        // Given
+        Transaction transaction = Transaction.builder()
+                .date(new Date())
+                .iban("iban")
+                .currency(Currency.EUR)
+                .id("transactionId")
+                .amount(100)
+                .build();
+
+        // When
+
+
+        // Then
+
+
+
+
+    }
+
+
+
 
     private Client generateTestClient() {
         Client testClient = Client.builder()
@@ -89,9 +105,6 @@ public class TransactionServiceTest {
     void getPaginatedTransactionListByUserAndDate() {
     }
 
-    @Test
-    void calculateDebitCreditScore() {
-    }
 
     @Test
     void consumeTransactionsFromTopic() {

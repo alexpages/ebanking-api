@@ -31,7 +31,7 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((auth) ->{
                     // whitelist requests in the inside pattern/list except the following
-                    auth.requestMatchers("/api/v1/auth/**","/api/v1/transaction/publish","/v3/api-docs/**", "/swagger-ui/**").permitAll();
+                    auth.requestMatchers("/api/v1/auth/**","/v3/api-docs/**", "/swagger-ui/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

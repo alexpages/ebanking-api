@@ -2,6 +2,7 @@ package com.alexpages.ebankingapi.services;
 
 import com.alexpages.ebankingapi.models.client.Client;
 import com.alexpages.ebankingapi.models.client.ClientRole;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,11 +16,16 @@ class JwtServiceTest {
 
     @Autowired
     private JwtService underTest;
+    private Client client;
+
+    @BeforeEach
+    void setUp(){
+        client = generateTestClient();
+    }
 
     @Test
     void itShouldGenerateCorrectTokenAndRelateToTheClient() throws Exception{
         // Given
-        Client client = generateTestClient();
 
         // When
         String jwtToken = underTest.generateToken(client);
@@ -35,7 +41,6 @@ class JwtServiceTest {
     @Test
     void tokenShouldBeValid(){
         // Given
-        Client client = generateTestClient();
 
         // When
         String jwtToken = underTest.generateToken(client);

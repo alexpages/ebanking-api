@@ -1,6 +1,6 @@
 package com.alexpages.ebankingapi.utils.transaction;
 
-import com.alexpages.ebankingapi.model.transaction.Transaction;
+import com.alexpages.ebankingapi.models.transaction.Transaction;
 import lombok.*;
 import java.util.List;
 

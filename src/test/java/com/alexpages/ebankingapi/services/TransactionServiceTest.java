@@ -7,6 +7,7 @@ import com.alexpages.ebankingapi.models.client.ClientRole;
 import com.alexpages.ebankingapi.models.transaction.Currency;
 import com.alexpages.ebankingapi.models.transaction.Transaction;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,10 +36,10 @@ public class TransactionServiceTest {
     @Mock private KafkaTemplate<String, String> kafkaTemplate;
     @Mock private Consumer<String, String> kafkaConsumer;
     @Mock private ClientService clientService;
+    @Mock private ExchangeRateService exchangeRateService;
     @Mock private Calendar calendar;
     @Mock private ObjectMapper objectMapper;
     @Mock private ClientRepository clientRepository;
-    private Client client;
 
     @InjectMocks
     private TransactionService underTest;
@@ -66,47 +67,77 @@ public class TransactionServiceTest {
         assertEquals(sentTransaction, transaction);
     }
 
-    @Test
-    void itShouldCalculateDebitCreditScore() {
+//    @Test
+//    void itShouldCalculateDebitCreditScore() throws JsonProcessingException {
+//        // Given
+//        Transaction transaction = Transaction.builder()
+//                .date(new Date())
+//                .iban("iban")
+//                .currency(Currency.EUR)
+//                .id("transactionId")
+//                .amount(100)
+//                .build();
+//        List<Transaction> transactionList= new ArrayList<>();
+//        transactionList.add(transaction);
+//
+//        // Example
+//        String jsonString = "{\n" +
+//                "  \"date\": \"2023-03-21 12:43:00+00\",\n" +
+//                "  \"base\": \"USD\",\n" +
+//                "  \"rates\": {\n" +
+//                "    \"EUR\": \"0.85\"\n" +
+//                "  }\n" +
+//                "}";
+//        JsonNode jsonNode = objectMapper.readTree(jsonString);
+//        // When
+//        when(exchangeRateService.getCurrentExchangeRateBaseUSD()).thenReturn(jsonString);
+//        when(objectMapper.readTree(anyString())).thenReturn(jsonNode);
+//        float calculatedDebitCredit = underTest.calculateDebitCreditScore(transactionList);
+//
+//        // Then
+//        assertNotNull(calculatedDebitCredit);
+//    }
 
-        // Given
-        Transaction transaction = Transaction.builder()
-                .date(new Date())
-                .iban("iban")
-                .currency(Currency.EUR)
-                .id("transactionId")
-                .amount(100)
-                .build();
-
-        // When
-
-
-        // Then
-
-
-
-
-    }
-
-
-
-
-    private Client generateTestClient() {
-        Client testClient = Client.builder()
-                .clientRole(ClientRole.USER)
-                .id(1)
-                .name("testClient")
-                .password("test")
-                .build();
-        return testClient;
-    }
-
-    @Test
-    void getPaginatedTransactionListByUserAndDate() {
-    }
-
-
-    @Test
-    void consumeTransactionsFromTopic() {
-    }
+//    @Test
+//    public void itShouldConsumeTransactionsFromTopic() throws JsonProcessingException {
+//        // Given
+//        int year = 2020;
+//        int month = 10;
+//        Client testClient = generateTestClient();
+//        // When
+//        when(clientService.findClientByName(anyString())).thenReturn(Optional.ofNullable(testClient));
+//        Transaction transaction = Transaction.builder()
+//                .date(new Date())
+//                .iban("iban")
+//                .currency(Currency.EUR)
+//                .id("transactionId")
+//                .amount(100)
+//                .build();
+//
+//        // When
+//        Transaction sentTransaction = underTest.publishTransactionToTopic(transaction);
+//
+//        // Then
+//        assertEquals(sentTransaction, transaction);
+//    }
+//
+//
+//    private Client generateTestClient() {
+//        Client testClient = Client.builder()
+//                .clientRole(ClientRole.USER)
+//                .id(1)
+//                .name("testClient")
+//                .password("test")
+//                .build();
+//        return testClient;
+//    }
+//
+//    @Test
+//    void getPaginatedTransactionListByUserAndDate() {
+//    }
+//
+//
+//    @Test
+//    void consumeTransactionsFromTopic() {
+//    }
 }

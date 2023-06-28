@@ -89,10 +89,10 @@ class ClientRepositoryTest {
         Client testClient = generateTestClient();
 
         // When
-        Optional<Client> foundClient = Optional.ofNullable(underTest.findClientByAccount("iban"));
+        Client foundClient = underTest.findClientByAccount("iban");
 
         // Then
-        assertThat(foundClient).isEmpty();
+        assertThat(foundClient).isNull();
     }
 
 

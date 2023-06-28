@@ -94,14 +94,13 @@ public class TransactionService {
         return transactionControllerResponse;
     }
 
-    public float calculateDebitCreditScore (List<Transaction> transactions){
+    public float calculateDebitCreditScore (List<Transaction> transactionsList){
         // According to API provider, base currency is USD
         String currencyRates = exchangeRateService.getCurrentExchangeRateBaseUSD();
         float debit_credit_score = 0;
         try{
             JsonNode responseJson = objectMapper.readTree(currencyRates);
-
-            for (Transaction transaction : transactions) {
+            for (Transaction transaction : transactionsList) {
                 String currentCurrency = String.valueOf(transaction.getCurrency());
                 double currentAmount = transaction.getAmount();
 
@@ -148,7 +147,7 @@ public class TransactionService {
         kafkaConsumer.assign(List.of(partition));
 
         //Obtain data
-        List<Transaction> transactionList = new ArrayList<>();
+        List<Transaction> transactionsList = new ArrayList<>();
 
         //Poll for records starting from beginning (0) of the partition
         kafkaConsumer.seek(partition, 0);
@@ -157,7 +156,7 @@ public class TransactionService {
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
                 try {
                     Transaction transaction = objectMapper.readValue(consumerRecord.value(), Transaction.class);
-                    transactionList.add(transaction);
+                    transactionsList.add(transaction);
                 } catch (JsonProcessingException e) {
                     // Log
                     logger.error("Kafka Consumer failed to read Kafka from topic");
@@ -171,7 +170,7 @@ public class TransactionService {
         while (!consumerRecords.isEmpty());
         //Unsubscribe consumer but no close
         kafkaConsumer.unsubscribe();
-        return transactionList;
+        return transactionsList;
         }
     }
 

@@ -22,10 +22,13 @@ public class ClientService {
     }
 
     public Client findClientByAccount(String iban){
-        return clientRepository.findClientByAccount(iban);
+        Client foundClient = clientRepository.findClientByAccount(iban);
+        if (foundClient==null){
+            throw new RuntimeException("Client with iban: "+ iban+ ", could not be found");
+        }
+        return foundClient;
     }
 
-    //TODO test it
     public String findClientNameByAccount(String iban){
         return findClientByAccount(iban).getUsername();
     }

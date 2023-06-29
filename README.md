@@ -17,7 +17,7 @@ To run a working copy of the code, go to [Running the project](#running-the-proj
 ### Architecture
 As an overview of the architecutre, it can be seen in the picture below:
 
-<img src="src/main/resources/Architecture.png"/>
+![img.png](src/main/resources/architecture.png)
 
 _Note: Some configuration files and components have not been included into the image to ensure readability of what is more relevant._
 

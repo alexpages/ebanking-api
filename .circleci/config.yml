@@ -5,7 +5,7 @@ jobs:
       - image: cimg/openjdk:17.0
     steps:
       - checkout
-      - run: mvn package
+      - run: mvn dependency:resolve
       - run: mvn test
       - store_artifacts:
           path: target/surefire-reports

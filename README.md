@@ -2,7 +2,7 @@ Synpulse8 - Backend Engineer Challange - ebanking-api
 -
 ***
 ### About
-This project is intended to be a resolution proposal for Synpulse8 Junior Java Backend vacancy in Hong Kong. The project complies with the following aspects:
+This project is a resolution proposal for Synpulse8 Junior Java Backend vacancy in Hong Kong. The project complies with the following aspects:
 - [x] Spring Boot
 - [x] Spring Security with JWT authentication
 - [x] PostgreSQL for saving Users and Accounts
@@ -11,19 +11,26 @@ This project is intended to be a resolution proposal for Synpulse8 Junior Java B
 - [x] Logging and monitoring support
 - [x] JUnit
 - [x] API modeling (Swagger/OpenAPI) and its documentation
+- [x] Completed CI/CD circle with Circle Ci and prepared K8s config with `kompose docker-compose.yml`
 
-To run a working copy of the code, go to [Running the project](#running-the-project)
+To run a working copy of the code, go to [Running the project](#running-the-project).
+
+Additionally:
+- CI/CD: [Circle-Ci-Pipeline](https://app.circleci.com/pipelines/github/alexpages?filter=all&status=none&status=success)
+- K8s: [K8s Configuration](/Users/alexpages/IdeaProjects/ebanking-api/k8s)
+
 ***
 ### Architecture
-As an overview of the architecutre, it can be seen in the picture below:
+This project follows the architecture shown below:
 
 ![img.png](src/main/resources/architecture.png)
-
-_Note: Some configuration files and components have not been included into the image to ensure readability of what is more relevant._
 
 The application is wrapped with Docker which enables different containers:
 
 ![img.png](src/main/resources/docker.png)
+
+_Note: Some configuration files and components have not been included into the image to ensure readability of what is more relevant._
+
 
 ***
 ### Endpoints
@@ -45,16 +52,16 @@ Once the system is up, swagger documentation is available at: `http://localhost:
 
 Transactions are stored in kafka topics (see [Relevant implementation decisions](#Relevant-implementation-decisions) for justification).
 
-The current solution considers creating kafka topics per year and user, following the schema: transactions-`year`-`clientName`. Each topic is divided in 12 partitions (months).
-Since the data obtained does not distinguish accounts, this is the most optimal approach for fast retrieval.
+The proposed solution for data management involves the creation of Kafka topics based on the year and user, following a specific schema: transactions-`year`-`clientName`. This approach ensures efficient data retrieval by dividing each topic into 12 partitions, corresponding to the months of the year.
 ***
 ### Security related
 Security has been implemented with Spring Security and covers the following:
-- Roles for clients (User, Admin)
-- Encoded client password
-- JWT for auth within http request
-- General http security configuration (whitelisting endpoints and requiring auth for others)
-- Other filters (filterchain)
+- User roles (User, Admin).
+- Encrypted client passwords.
+- JWT for authentication within HTTP requests.
+- Overall HTTP security configuration (endpoint whitelisting and authentication requirements for others).
+- Implementation of additional filters (filter chain) for enhanced security.
+
 ***
 ### Pre-Requisites
 To run this code it is necessary the following:
@@ -70,14 +77,11 @@ gh repo clone alexpages/ebanking-api
 ```shell
 docker-compose up
 ```
-3. Containers should start (Kafka, Zookeper, Postgresql and ebanking-api) and the application is ready for interaction.
+3. After previous step, 4 containers initialize  (Kafka, Zookeper, Postgresql and ebanking-api) and the application is ready for interaction.
 
+The docker-compose.yml file follows a structured approach, defining a total of 4 container.
+The Spring Boot application is encapsulated within a Docker image, which is generated during the second step of the process through the execution of a Dockerfile, being this the only image that does not get pulled from Docker Hub.
 
-Docker-compose.yml has a structure based on different services/containers. 
-The Spring Boot application is wrapped into a docker image which is created in the moment of performing the second step. 
-
-In the file it is defined a context (directory) and the file to run (Dockerfile) to create the Docker image.
-Dependencies between containers and _restart_ patterns will ensure the correct deployment of the whole app.
 ***
 ### Examples of requests
 
@@ -131,26 +135,22 @@ Dependencies between containers and _restart_ patterns will ensure the correct d
 ```
 
 ***
-### Relevant implementation decisions
-- **N-Tier architecture**/Folder architecture - by element function within the project.
-- **Store transactions in Kafka topics** and not in DB.
-  - Avoid using Pageable - Transactions are not saved into a Repository.
-  - Avoid using Kafka Streams - Wrong approach, it is for Real-Time Data Ingestion.
-- **Kafka Topic/Partition** distribution
-  - Consideration 1: Grouping transactions by IBAN.
-  - Consideration 2: Grouping transactions by KTable to perform interactive queries (Applicable for overall money balance)
-  - Final decision: more topics (year-user combination) and partitions (12 per topic, as in months) was decided.
-- **Dockerfile** to create spring boot app
-- **Docker-compose** set with images compatible linux/arm64
-- Made **REST API reusable** by using environmental variables within docker-compose and application.yml, always with default values.
-- K8s configuration is done with `kompose convert docker-compose.yml` from Kubernetes. Note that restart policies 'unless-stopped' in service kafka is not supported. To deploy it should be changed to 'always'.
+### Key Implementation Decisions
+- `N-Tier architecture/Folder architecture`: Organizing elements based on their functions within the project.
+- `Kafka Topic/Partition` distribution:
+  - Consideration 1: grouping transactions by IBAN.
+  - Consideration 2: grouping transactions by KTable for interactive queries, especially for overall money balance.
+  - Final decision: Using more topics (year-user combination) and partitions (12 per topic, representing months).
+- `Dockerfile` for creating the Spring Boot application.
+- Making the `REST API` reusable by utilizing environmental variables in docker-compose and application.yml files, with default values.
+- K8s configuration performed using `kompose convert docker-compose.yml` to convert to Kubernetes format. Note that restart policies 'unless-stopped' in service kafka is not supported. To deploy it should be changed to 'always'.
+- Avoiding the use of Pageable as transactions are not saved in a Repository.
+- Determining that Kafka Streams is not the appropriate approach as it is designed for real-time data ingestion.
 
 ***
-### Future improvements
-- [x] Implement Custom SERDES for Kafka Streams
-- [ ] Improve Exchange Rate Service to customize base currency
-- [ ] Kafka Streams and Topology for filtering transactions
-- [ ] Kafka Tables for updating the total balance of each user (Key-Value Store) with interactive queries
-- [ ] Microservice for JWT generation and renewal
+### Considerations for future improvements
+- [x] Implement Custom SERDES for Kafka Streams.
+- [ ] KTables and Kafka Topology for updating the total balance of each user (Key-Value Store) with interactive queries.
+- [ ] Enhance JwtService for token renewal.
 ****
 

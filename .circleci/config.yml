@@ -1,17 +1,18 @@
 version: 2.1
 jobs:
-  build:
+  s8-building-testing:
     docker:
       - image: cimg/openjdk:17.0
     steps:
       - checkout
-      - run: mvn dependency:resolve
-      - run: mvn test
-      - store_artifacts:
-          path: target/surefire-reports
-          destination: test-reports
+      - run:
+          name: Building
+          command: mvn clean package -Dmaven.test.skip
+      - run:
+          name: Testing
+          command: mvn test
 workflows:
   version: 2
   build-deploy:
     jobs:
-      - build
+      - s8-building-testing

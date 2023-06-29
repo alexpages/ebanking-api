@@ -1,0 +1,17 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:11
+    steps:
+      - checkout
+      - run: mvn dependency:resolve
+      - run: mvn test
+      - store_artifacts:
+          path: target/surefire-reports
+          destination: test-reports
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build

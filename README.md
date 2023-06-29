@@ -143,6 +143,8 @@ Dependencies between containers and _restart_ patterns will ensure the correct d
 - **Dockerfile** to create spring boot app
 - **Docker-compose** set with images compatible linux/arm64
 - Made **REST API reusable** by using environmental variables within docker-compose and application.yml, always with default values.
+- K8s configuration is done with `kompose convert docker-compose.yml` from Kubernetes. Note that restart policies 'unless-stopped' in service kafka is not supported. To deploy it should be changed to 'always'.
+
 ***
 ### Future improvements
 - [x] Implement Custom SERDES for Kafka Streams

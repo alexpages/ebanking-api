@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f /Users/alexpages/IdeaProjects/ebanking-api/docker-compose.yml
+    kompose.version: 1.28.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.network/ebanking-api-default: "true"
+    io.kompose.service: ebanking-api
+  name: ebanking-api
+spec:
+  containers:
+    - env:
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: postgres
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:postgresql://postgres:5432/S8Clients
+        - name: SPRING_DATASOURCE_USERNAME
+          value: postgres
+        - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+          value: update
+      image: ebanking-api
+      name: ebanking-api-container
+      ports:
+        - containerPort: 8080
+      resources: {}
+  restartPolicy: OnFailure
+status: {}

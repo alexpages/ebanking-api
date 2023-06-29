@@ -24,6 +24,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class TransactionService {
 
+    @Autowired
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ClientService clientService;
     private final Calendar calendar = Calendar.getInstance();

@@ -7,12 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.KafkaTemplate;
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 public class TransactionServiceTest {
 

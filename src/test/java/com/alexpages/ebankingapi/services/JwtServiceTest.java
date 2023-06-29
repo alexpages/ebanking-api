@@ -3,21 +3,14 @@ package com.alexpages.ebankingapi.services;
 import com.alexpages.ebankingapi.models.account.Account;
 import com.alexpages.ebankingapi.models.client.Client;
 import com.alexpages.ebankingapi.models.client.ClientRole;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.event.annotation.AfterTestClass;
 import org.springframework.test.context.event.annotation.AfterTestMethod;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 
 @SpringBootTest(classes = JwtService.class)
 class JwtServiceTest {

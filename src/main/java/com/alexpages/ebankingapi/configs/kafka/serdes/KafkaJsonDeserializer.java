@@ -12,7 +12,7 @@ import java.util.Map;
 @NoArgsConstructor
 public class KafkaJsonDeserializer<T> implements Deserializer<T> {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private Class<T> type;
 
     public KafkaJsonDeserializer(Class<T> type) {

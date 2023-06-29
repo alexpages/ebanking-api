@@ -1,44 +1,25 @@
 version: '3.9'
 
 services:
-  ebanking-api:
-    container_name: ebanking-api
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    image: ebanking-api
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_HOST: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-    depends_on:
-      - postgres
-      - kafka
-    links:
-      - postgres
 
   postgres:
-    container_name: postgres
+    container_name: postgres_container
     image: postgres:alpine
     ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_DB: S8Clients
 
   zookeeper:
-    container_name: zookeeper
+    container_name: zookeeper_container
     image: zookeeper
     ports:
       - "2181:2181"
 
   kafka:
-    container_name: kafka
+    container_name: kafka_container
     image: bitnami/kafka:latest
     ports:
       - "9092:9092"
@@ -47,6 +28,27 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ADVERTISED_HOST_NAME: kafka
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       KAFKA_NUM_PARTITIONS: 12
+    restart: unless-stopped
+
+  ebanking-api:
+    container_name: ebanking_api_container
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    image: ebanking-api
+    environment:
+       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/S8Clients
+       SPRING_DATASOURCE_USERNAME: postgres
+       SPRING_DATASOURCE_PASSWORD: postgres
+       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+    - postgres
+    - kafka
+    - zookeeper
+    restart: on-failure

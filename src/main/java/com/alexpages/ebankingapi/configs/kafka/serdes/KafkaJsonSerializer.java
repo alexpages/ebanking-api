@@ -12,7 +12,7 @@ import java.util.Map;
 @NoArgsConstructor
 public class KafkaJsonSerializer<T> implements Serializer<T> {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void configure(Map<String, ?> map, boolean b) {

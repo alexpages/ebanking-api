@@ -1,19 +1,15 @@
 package com.alexpages.ebankingapi.services;
 
-import com.alexpages.ebankingapi.exceptions.UserNotFoundException;
 import com.alexpages.ebankingapi.models.client.Client;
 import com.alexpages.ebankingapi.models.client.ClientRepository;
 import com.alexpages.ebankingapi.models.client.ClientRole;
 import com.alexpages.ebankingapi.models.account.Account;
-import org.junit.Assert;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

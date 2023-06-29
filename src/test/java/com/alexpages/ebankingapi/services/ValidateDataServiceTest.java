@@ -1,6 +1,5 @@
 package com.alexpages.ebankingapi.services;
 
-import jakarta.validation.constraints.AssertFalse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

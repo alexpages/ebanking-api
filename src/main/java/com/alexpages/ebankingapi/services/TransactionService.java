@@ -1,6 +1,5 @@
 package com.alexpages.ebankingapi.services;
 
-import com.alexpages.ebankingapi.models.client.Client;
 import com.alexpages.ebankingapi.models.transaction.Transaction;
 import com.alexpages.ebankingapi.utils.transaction.PaginatedList;
 import com.alexpages.ebankingapi.utils.transaction.TransactionControllerResponse;

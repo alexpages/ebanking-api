@@ -5,6 +5,7 @@ jobs:
       - image: cimg/openjdk:17.0
     steps:
       - checkout
+      - run: mvn dependency:go-offline
       - run:
           name: Building
           command: mvn clean package -Dmaven.test.skip

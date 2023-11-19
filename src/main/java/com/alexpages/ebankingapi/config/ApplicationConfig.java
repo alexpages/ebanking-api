@@ -1,6 +1,8 @@
 package com.alexpages.ebankingapi.config;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,17 +19,19 @@ import com.alexpages.ebankingapi.repository.ClientRepository;
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
-
-    private final ClientRepository repository;
-    @Bean
-    public UserDetailsService userDetailsService(){
-        return username -> repository.findClientByName(username)
+	
+	@Autowired
+    private ClientRepository clientRepository;
+    
+    public UserDetailsService userDetailsService()
+    {
+        return username -> clientRepository.findClientByName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Client not found"));
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(){
-        //Data Access Object responsible to fetch userDetails, encode password, etc.
+    public AuthenticationProvider authenticationProvider()
+    {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());

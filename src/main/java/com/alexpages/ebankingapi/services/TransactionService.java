@@ -25,23 +25,26 @@ import java.util.*;
 public class TransactionService {
 
     @Autowired
-    private final KafkaTemplate<String, String> kafkaTemplate;
-    private final ClientService clientService;
-    private final Calendar calendar = Calendar.getInstance();
-    private final Consumer<String, String> kafkaConsumer;
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final ValidateDataService validateDataService;
-    private final ExchangeRateService exchangeRateService;
-
+    private KafkaTemplate<String, String> kafkaTemplate;
+    @Autowired
+    private ClientService clientService;
+    @Autowired
+    private ValidateDataService validateDataService;
+    @Autowired
+    private ExchangeRateService exchangeRateService;
+    
+    private Calendar calendar = Calendar.getInstance();
+    @Autowired
+    private Consumer<String, String> kafkaConsumer;
+    
+    private ObjectMapper objectMapper = new ObjectMapper();
+    
     private static final Logger logger = LoggerFactory.getLogger(TransactionService.class);
 
-    // PUBLISHER
 
     public Transaction publishTransactionToTopic(Transaction transaction){
-        // Schema: topic = year+client, partition = month -> 12 topics per client
         String clientName = clientService.findClientNameByAccount(transaction.getIban());
 
-        // Get transaction date and obtain topic to be published
         calendar.setTime(transaction.getDate());
         int transactionPartitionMonth = calendar.get(Calendar.MONTH);                   //will be the partition of the topic
         int transactionYear = calendar.get(Calendar.YEAR);                              //will help define the topic
@@ -73,7 +76,6 @@ public class TransactionService {
         int beginning = 0;
         int end = pageSize;
 
-        // Windowed approach
         for (int i = 0; i< requiredPages; i++){
             List<Transaction> transactionsOfPage = transactionList.subList(beginning, Math.min(end, transactionAmount));
             int currentPageNo = i+1;
@@ -96,7 +98,7 @@ public class TransactionService {
     }
 
     public float calculateDebitCreditScore (List<Transaction> transactionsList){
-        // According to API provider, base currency is USD
+    	
         String currencyRates = exchangeRateService.getCurrentExchangeRateBaseUSD();
         float debit_credit_score = 0;
         try{

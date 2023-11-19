@@ -3,7 +3,6 @@ package com.alexpages.ebankingapi.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 @Data
 @Entity
 @Builder

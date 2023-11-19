@@ -4,15 +4,17 @@ import com.alexpages.ebankingapi.domain.Account;
 import com.alexpages.ebankingapi.domain.Client;
 import com.alexpages.ebankingapi.exceptions.UserAlreadyPresentException;
 import com.alexpages.ebankingapi.exceptions.UserNotFoundException;
-import com.alexpages.ebankingapi.models.client.*;
+import com.alexpages.ebankingapi.domain.*;
 import com.alexpages.ebankingapi.utils.AuthenticateRequest;
 import com.alexpages.ebankingapi.utils.AuthenticationResponse;
 import com.alexpages.ebankingapi.utils.ClientRole;
 import com.alexpages.ebankingapi.utils.RegisterRequest;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,28 +24,26 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
+@Slf4j
 @Service
-@RequiredArgsConstructor
 public class AuthenticationService {
 
-    private final ClientService clientService;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
+    private ClientService clientService;
+    private JwtService jwtService;
+    private PasswordEncoder passwordEncoder;
+    private AuthenticationManager authenticationManager;
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
     public AuthenticationResponse register(RegisterRequest request) {
         Optional<Client> clientOptional = clientService.findClientByName(request.getClientName());
         if (clientOptional.isPresent()){
             // Log
             String errorMessage = "Client with username: " + request.getClientName() + " ,could not be registered because it is already present in the DB";
-            logger.error(errorMessage);
+            log.error(errorMessage);
             throw new UserAlreadyPresentException(errorMessage);
         }
         String encodedPassword = passwordEncoder.encode(request.getPassword());
-        // Log
-        logger.debug("Password has been encoded");
         List<Account> accounts = request.getAccounts().stream()
                 .map(account -> Account.builder()
                         .iban(account.getIban())
@@ -59,7 +59,7 @@ public class AuthenticationService {
         clientService.addClient(client);
         var jwtToken = jwtService.generateToken(client);
         // Log
-        logger.info("Client registered successfully: {}", client);
+        Logger..info("Client registered successfully: {}", client);
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
 

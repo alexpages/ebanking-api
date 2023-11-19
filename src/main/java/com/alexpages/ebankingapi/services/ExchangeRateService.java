@@ -1,22 +1,25 @@
 package com.alexpages.ebankingapi.services;
 
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.alexpages.ebankingapi.exceptions.EbankingManagerException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+@Slf4j
 @Service
-@RequiredArgsConstructor
 public class ExchangeRateService {
 
     private static final Logger logger = LoggerFactory.getLogger(ExchangeRateService.class);
-    private HttpURLConnection httpURLConnection;
 
     @Value("${EXCHANGE_RATE_KEY}")
     private String EXCHANGE_RATE_KEY;
@@ -24,16 +27,15 @@ public class ExchangeRateService {
     @Value("${EXCHANGE_RATE_STRING_URL}")
     private String EXCHANGE_RATE_STRING_URL;
 
-    public String getCurrentExchangeRateBaseUSD() {
-        String string_url = EXCHANGE_RATE_STRING_URL + EXCHANGE_RATE_KEY;
+    public String getCurrentExchangeRateBaseUSD() 
+    {
+    	String string_url = EXCHANGE_RATE_STRING_URL + EXCHANGE_RATE_KEY;
         try {
-            // Connect to URL
             URL url = new URL(string_url);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             int responseCode = connection.getResponseCode();
 
-            // Read
             StringBuilder sb = new StringBuilder();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -45,9 +47,8 @@ public class ExchangeRateService {
                 return sb.toString();
             }
         } catch (IOException e) {
-            // Log
             logger.error("Failed to fetch external exchange rate api");
-            throw new RuntimeException(e);
+            throw new EbankingManagerException("Failed to fetch external exchange rate api");
         }
         return null;
     }

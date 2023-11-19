@@ -19,14 +19,23 @@ import java.util.List;
 @Table(name = "client")
 public class Client implements UserDetails {
 
-    @Id
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    
     private String name;
+   
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "client_id")
     private List<Account> accounts;
+    
     private String password;
+    
     @Enumerated(EnumType.STRING)
     private ClientRole clientRole;
 

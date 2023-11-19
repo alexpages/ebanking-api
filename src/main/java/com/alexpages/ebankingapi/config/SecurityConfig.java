@@ -31,11 +31,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests((auth) ->{
+                .authorizeHttpRequests(auth ->{
                     auth.requestMatchers("/api/v1/auth/**","/v3/api-docs/**", "/swagger-ui/**").permitAll(); //whitelist endpoints
                     auth.anyRequest().authenticated();
                 })
-                .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

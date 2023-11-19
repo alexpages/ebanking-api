@@ -23,11 +23,15 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-	@Autowired
-    private JwtService jwtService;  
 	
-    @Autowired
+    private JwtService jwtService;  
     private UserDetailsService userDetailsService;
+
+    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService) 
+    {
+    	this.jwtService = jwtService;
+		this.userDetailsService = userDetailsService;
+	}
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,

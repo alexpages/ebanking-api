@@ -4,6 +4,7 @@ import com.alexpages.ebankingapi.domain.Account;
 import com.alexpages.ebankingapi.domain.Client;
 import com.alexpages.ebankingapi.utils.ClientRole;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ class JwtServiceTest {
         client = generateTestClient();
     }
 
-    @AfterTestMethod
+    @AfterEach
     public void tearDown() {
         client = null;
     }

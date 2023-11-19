@@ -13,7 +13,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-public class TransactionServiceTest {
+class TransactionServiceTest {
 
     @Mock private KafkaTemplate<String, String> kafkaTemplate;
     @Mock private ClientService clientService;
@@ -23,7 +23,7 @@ public class TransactionServiceTest {
     private TransactionService underTest;
 
     @Test
-    public void itShouldPublishTransaction(){
+    void itShouldPublishTransaction(){
         // Given
         Transaction transaction = Transaction.builder()
                 .date(new Date())

@@ -1,6 +1,7 @@
 package com.alexpages.ebankingapi.services;
 
 import com.alexpages.ebankingapi.domain.Transaction;
+import com.alexpages.ebankingapi.exceptions.EbankingManagerException;
 import com.alexpages.ebankingapi.utils.PaginatedList;
 import com.alexpages.ebankingapi.utils.TransactionControllerResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,26 +24,31 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class TransactionService {
-
-    @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate;
-    @Autowired
-    private ClientService clientService;
-    @Autowired
-    private ValidateDataService validateDataService;
-    @Autowired
-    private ExchangeRateService exchangeRateService;
-    
-    private Calendar calendar = Calendar.getInstance();
-    @Autowired
-    private Consumer<String, String> kafkaConsumer;
-    
-    private ObjectMapper objectMapper = new ObjectMapper();
-    
+	
     private static final Logger logger = LoggerFactory.getLogger(TransactionService.class);
 
-
-    public Transaction publishTransactionToTopic(Transaction transaction){
+	private KafkaTemplate<String, String> kafkaTemplate;
+    private ClientService clientService;
+    private ValidateDataService validateDataService;
+    private ExchangeRateService exchangeRateService; 
+    private Calendar calendar = Calendar.getInstance();
+    private Consumer<String, String> kafkaConsumer;
+    private ObjectMapper objectMapper = new ObjectMapper();
+	
+    public TransactionService(KafkaTemplate<String, String> kafkaTemplate, ClientService clientService,
+			ValidateDataService validateDataService, ExchangeRateService exchangeRateService,
+			Consumer<String, String> kafkaConsumer, ObjectMapper objectMapper) 
+    {
+		this.kafkaTemplate = kafkaTemplate;
+		this.clientService = clientService;
+		this.validateDataService = validateDataService;
+		this.exchangeRateService = exchangeRateService;
+		this.kafkaConsumer = kafkaConsumer;
+		this.objectMapper = objectMapper;
+	}
+    
+    public Transaction publishTransactionToTopic(Transaction transaction)
+    {
         String clientName = clientService.findClientNameByAccount(transaction.getIban());
 
         calendar.setTime(transaction.getDate());
@@ -61,7 +67,7 @@ public class TransactionService {
         } catch (JsonProcessingException e) {
             // Log
             logger.error("Transaction {} could not be published", transaction);
-            throw new RuntimeException(e);          //Always runtime exception
+            throw new EbankingManagerException("Transaction {} could not be published");          //Always runtime exception
         }
     }
 

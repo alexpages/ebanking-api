@@ -2,7 +2,7 @@ package com.alexpages.ebankingapi.services;
 
 import com.alexpages.ebankingapi.domain.Account;
 import com.alexpages.ebankingapi.domain.Client;
-import com.alexpages.ebankingapi.exceptions.UserAlreadyPresentException;
+import com.alexpages.ebankingapi.exceptions.EbankingManagerException;
 import com.alexpages.ebankingapi.exceptions.UserNotFoundException;
 import com.alexpages.ebankingapi.utils.AuthenticateRequest;
 import com.alexpages.ebankingapi.utils.AuthenticationResponse;
@@ -74,7 +74,7 @@ class AuthenticationServiceTest {
         when(clientService.findClientByName(clientName)).thenReturn(Optional.of(existingClient));
 
         // Then
-        UserAlreadyPresentException exception = Assertions.assertThrows(UserAlreadyPresentException.class, () -> {
+        EbankingManagerException exception = Assertions.assertThrows(EbankingManagerException.class, () -> {
             underTest.register(request);
         });
         assertEquals("Client with username: " + request.getClientName() + " ,could not be registered because it is already present in the DB", exception.getMessage());

@@ -1,12 +1,13 @@
-package com.alexpages.ebankingapi.utils.auth;
+package com.alexpages.ebankingapi.utils;
 
-import com.alexpages.ebankingapi.models.account.Account;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+
+import com.alexpages.ebankingapi.domain.Account;
 
 @Data
 @Builder

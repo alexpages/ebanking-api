@@ -1,7 +1,8 @@
 package com.alexpages.ebankingapi.services;
 
-import com.alexpages.ebankingapi.models.client.Client;
-import com.alexpages.ebankingapi.models.client.ClientRepository;
+import com.alexpages.ebankingapi.domain.Client;
+import com.alexpages.ebankingapi.repository.ClientRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

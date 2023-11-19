@@ -1,5 +1,6 @@
-package com.alexpages.ebankingapi.models.transaction;
+package com.alexpages.ebankingapi.domain;
 
+import com.alexpages.ebankingapi.utils.Currency;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;

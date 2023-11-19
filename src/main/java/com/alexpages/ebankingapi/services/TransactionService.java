@@ -1,8 +1,8 @@
 package com.alexpages.ebankingapi.services;
 
-import com.alexpages.ebankingapi.models.transaction.Transaction;
-import com.alexpages.ebankingapi.utils.transaction.PaginatedList;
-import com.alexpages.ebankingapi.utils.transaction.TransactionControllerResponse;
+import com.alexpages.ebankingapi.domain.Transaction;
+import com.alexpages.ebankingapi.utils.PaginatedList;
+import com.alexpages.ebankingapi.utils.TransactionControllerResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

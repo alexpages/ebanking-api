@@ -1,6 +1,8 @@
-package com.alexpages.ebankingapi.models.account;
+package com.alexpages.ebankingapi.repository;
 
-import com.alexpages.ebankingapi.models.client.Client;
+import com.alexpages.ebankingapi.domain.Account;
+import com.alexpages.ebankingapi.domain.Client;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

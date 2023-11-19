@@ -1,6 +1,5 @@
-package com.alexpages.ebankingapi.models.account;
+package com.alexpages.ebankingapi.domain;
 
-import com.alexpages.ebankingapi.models.client.Client;
 import jakarta.persistence.*;
 import lombok.*;
 

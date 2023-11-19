@@ -1,8 +1,9 @@
-package com.alexpages.ebankingapi.utils.transaction;
+package com.alexpages.ebankingapi.utils;
 
-import com.alexpages.ebankingapi.models.transaction.Transaction;
 import lombok.*;
 import java.util.List;
+
+import com.alexpages.ebankingapi.domain.Transaction;
 
 @Getter
 @Setter

@@ -1,4 +1,4 @@
-package com.alexpages.ebankingapi.configs.kafka;
+package com.alexpages.ebankingapi.config;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;

@@ -1,12 +1,15 @@
 package com.alexpages.ebankingapi.services;
 
+import com.alexpages.ebankingapi.domain.Account;
+import com.alexpages.ebankingapi.domain.Client;
 import com.alexpages.ebankingapi.exceptions.UserAlreadyPresentException;
 import com.alexpages.ebankingapi.exceptions.UserNotFoundException;
-import com.alexpages.ebankingapi.models.account.Account;
 import com.alexpages.ebankingapi.models.client.*;
-import com.alexpages.ebankingapi.utils.auth.AuthenticateRequest;
-import com.alexpages.ebankingapi.utils.auth.AuthenticationResponse;
-import com.alexpages.ebankingapi.utils.auth.RegisterRequest;
+import com.alexpages.ebankingapi.utils.AuthenticateRequest;
+import com.alexpages.ebankingapi.utils.AuthenticationResponse;
+import com.alexpages.ebankingapi.utils.ClientRole;
+import com.alexpages.ebankingapi.utils.RegisterRequest;
+
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

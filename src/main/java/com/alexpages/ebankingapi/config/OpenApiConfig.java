@@ -1,4 +1,4 @@
-package com.alexpages.ebankingapi.configs.doc;
+package com.alexpages.ebankingapi.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;

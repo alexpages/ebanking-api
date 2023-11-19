@@ -1,4 +1,4 @@
-package com.alexpages.ebankingapi.models.transaction;
+package com.alexpages.ebankingapi.utils;
 
 public enum Currency {
     AED, // United Arab Emirates Dirham

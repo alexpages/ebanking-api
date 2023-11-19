@@ -1,8 +1,9 @@
 package com.alexpages.ebankingapi.services;
 
-import com.alexpages.ebankingapi.models.client.ClientRepository;
-import com.alexpages.ebankingapi.models.transaction.Currency;
-import com.alexpages.ebankingapi.models.transaction.Transaction;
+import com.alexpages.ebankingapi.domain.Transaction;
+import com.alexpages.ebankingapi.repository.ClientRepository;
+import com.alexpages.ebankingapi.utils.Currency;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;

@@ -1,9 +1,10 @@
 package com.alexpages.ebankingapi.services;
 
-import com.alexpages.ebankingapi.models.client.Client;
-import com.alexpages.ebankingapi.models.client.ClientRepository;
-import com.alexpages.ebankingapi.models.client.ClientRole;
-import com.alexpages.ebankingapi.models.account.Account;
+import com.alexpages.ebankingapi.domain.Account;
+import com.alexpages.ebankingapi.domain.Client;
+import com.alexpages.ebankingapi.repository.ClientRepository;
+import com.alexpages.ebankingapi.utils.ClientRole;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;

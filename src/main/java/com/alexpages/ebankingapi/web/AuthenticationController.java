@@ -1,9 +1,10 @@
-package com.alexpages.ebankingapi.controllers;
+package com.alexpages.ebankingapi.web;
 
-import com.alexpages.ebankingapi.utils.auth.AuthenticateRequest;
-import com.alexpages.ebankingapi.utils.auth.AuthenticationResponse;
-import com.alexpages.ebankingapi.utils.auth.RegisterRequest;
 import com.alexpages.ebankingapi.services.AuthenticationService;
+import com.alexpages.ebankingapi.utils.AuthenticateRequest;
+import com.alexpages.ebankingapi.utils.AuthenticationResponse;
+import com.alexpages.ebankingapi.utils.RegisterRequest;
+
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

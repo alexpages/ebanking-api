@@ -1,4 +1,4 @@
-package com.alexpages.ebankingapi.utils.transaction;
+package com.alexpages.ebankingapi.utils;
 
 import lombok.*;
 

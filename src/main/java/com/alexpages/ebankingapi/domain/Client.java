@@ -1,11 +1,12 @@
-package com.alexpages.ebankingapi.models.client;
+package com.alexpages.ebankingapi.domain;
 
-import com.alexpages.ebankingapi.models.account.Account;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.alexpages.ebankingapi.utils.ClientRole;
 
 import java.util.Collection;
 import java.util.List;

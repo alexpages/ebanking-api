@@ -1,9 +1,10 @@
-package com.alexpages.ebankingapi.controllers;
+package com.alexpages.ebankingapi.web;
 
 
-import com.alexpages.ebankingapi.models.transaction.Transaction;
+import com.alexpages.ebankingapi.domain.Transaction;
 import com.alexpages.ebankingapi.services.TransactionService;
-import com.alexpages.ebankingapi.utils.transaction.TransactionControllerRequest;
+import com.alexpages.ebankingapi.utils.TransactionControllerRequest;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

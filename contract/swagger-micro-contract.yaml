@@ -1,0 +1,409 @@
+openapi: 3.0.0
+info:
+  title: ebanking
+  version: '1.0'
+  description: >
+    **eBanking** is an API facilitating secure management of transactions and clients, leveraging Kafka queues for transaction handling. Built on Node.js and Kafka, it enables real-time transaction processing, client management, and authentication using JWT tokens.
+    For more information, visit [API Documentation](https://www.example.com/documentation).
+  termsOfService: 'http://swagger.io/terms/'
+  contact:
+    name: Alex Pages Andreu
+    email: alexpagesandreu@gmail.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  - url: 'http://localhost:3000'
+tags:
+  - name: transaction
+    description: Endpoints related to transaction management
+  - name: client
+    description: Endpoints for client management and authentication
+
+paths:
+  /transaction:
+    post:
+      tags:
+        - transaction
+      summary: Add a new transaction
+      description: This method allows you to post a **new transaction** to a Kafka topic with a concept in it.
+      operationId: addTransaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+      responses:
+        '201':
+          description: Transaction added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactionId:
+                    description: Transaction id
+                    type: integer
+                    example: 1
+        '400':
+          description: Bad request. Transaction body does not follow the expected format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid transaction format"
+        '5XX':
+          description: Internal Server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal Server Error"
+  /transaction/request:
+    post:
+      tags:
+        - transaction
+      summary: Get transactions with pagination
+      description: Retrieve transactions based on search criteria with pagination.
+      operationId: getTransactions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputDataSearch'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutputDataSearch'
+        '204':
+          description: No Content
+        '400':
+          description: Bad request. Transaction body does not follow the expected format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid transaction format"
+        '5XX':
+          description: Internal Server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal Server Error"
+  /client:
+    post:
+      tags:
+        - client
+      summary: Add a New Client
+      description: Create a new client profile.
+      operationId: addClient
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Client'
+      responses:
+        '201':
+          description: Client created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clientName:
+                    description: Client name
+                    type: string
+                    example: client_01
+        '400':
+          description: Bad request. Client body does not follow the expected format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid client format"
+        '5XX':
+          description: Internal Server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal Server Error"
+  '/client/{clientId}/authenticate':
+    post:
+      tags:
+        - client
+      summary: Authenticate a client
+      description: This method allows you to retrieve a **JWT** for the client.
+      operationId: authenticateClient
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticateRequest'
+      responses:
+        '200':
+          description: JWT created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jwt:
+                    description: Client temporary JWT
+                    type: string
+                    example: jwt0000001
+        '404':
+          description: Client not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Client not found in database"
+        '5XX':
+          description: Internal Server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal Server Error"
+components:
+  parameters:
+    PageKey:
+      description: Page number to return
+      name: pageKey
+      in: query
+      required: true
+      schema:
+        type: string
+    PageSize:
+      description: Number of records per page
+      name: pageSize
+      in: query
+      required: true
+      schema:
+        type: string
+    ClientId:
+      description: Client id
+      name: clientId
+      in: path
+      required: true
+      schema:
+        type: number
+  schemas:
+    Account:
+        description: Bank account registered to a specific username
+        type: object
+        properties:
+          bankId:
+            description: Bank Id
+            type: number
+            example: 1
+          iban:
+            description: IBAN related to the bank account size
+            type: string
+            example: ES111111111
+          currency:
+            $ref: '#/components/schemas/Currency'
+          client:
+            $ref: '#/components/schemas/Client'
+    Client:
+        description: Bank account registered to a specific username
+        type: object
+        properties:
+          clientId:
+            description: Client Id
+            type: number
+            example: 1
+          name:
+            description: Name of the client
+            type: string
+            example: client_01
+          password:
+            description: Password of the account. Not the bank account.
+            type: string
+            example: encryptedPassword
+          accounts:
+            description: List of accounts
+            type: array
+            items:
+              $ref: '#/components/schemas/Account'
+          role:
+            enum:
+              - USER
+              - ADMIN
+    Transaction:
+        description: Transaction linked to a bank account.
+        type: object
+        properties:
+          transactionId:
+            description: Transaction Id.
+            type: number
+            example: 0000-0000-0000
+          monetaryAmount:
+            $ref: '#/components/schemas/MonetaryAmount'
+          iban:
+            description: IBAN of the transaciton.
+            type: string
+            example: ES111111111
+          concept:
+            description: Description of the concept of the transaction.
+            type: string
+            example: Gift card from Amazon shop
+          date:
+              description: Date when the transaction took place.
+              type: string
+              format: date
+              example: 2023-12-01       
+    Currency:
+        description: A currency represented by its ISO 4217 alpha code
+        type: string
+        pattern: "^[A-Z]{3}$"
+        example: "EUR"
+    MonetaryAmount:
+      description: A monetary value
+      type: object
+      properties:
+        value:
+          type: number
+          format: double
+          example: 0.01
+        currency:
+          "$ref": "#/components/schemas/Currency"
+      required: [value, currency]
+      example:
+        value: "0.01"
+        currency: "EUR"
+    AuthenticateRequest:
+      description: Request body for client authentication
+      type: object
+      properties:
+        password:
+          description: Password of the client
+          type: string   # Adjust the type/format as needed (e.g., string, password)
+          example: password123  # Provide an example password here
+      required:
+        - password
+    OutputDataSearch:
+      description: Transactions's list found in the search
+      type: object
+      properties:
+        pagination:
+            $ref: '#/components/schemas/PageResponse'
+        transaction:
+            $ref: '#/components/schemas/Transaction'
+    InputDataSearch:
+      description: Fields for Transactions's search request
+      type: object
+      properties:
+        clientName:
+          description: Client name
+          type: string
+          example: client_01
+        year:
+          description: Year for the search
+          type: number
+          example: 2023
+        month:
+          description: Month for the search
+          type: number
+          example: 10
+        paginationBody:
+          $ref: '#/components/schemas/PaginationBody'
+    PaginationBody:
+      description: Pagination fields for request body
+      type: object
+      properties:
+        page:
+          description: Page key
+          type: number
+          example: 1
+        size:
+          description: Page size
+          type: number
+          example: 10
+    PageResponse:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+          description: Número total de páginas existentes
+        totalElements:
+          type: integer
+          format: int64
+          description: Número total de registros existentes
+        size:
+          type: integer
+          description: Número total de registros por página
+        number:
+          type: integer
+          description: Número de registro de la primera página
+        numberOfElements:
+          type: integer
+          description: Número de registros de la página devuelta
+        last:
+          type: boolean
+          description: true si es la última página
+        first:
+          type: boolean
+          description: true si es la primera página
+        empty:
+          type: boolean
+          description: true si la página devuelta no contiene registros
+        sort:
+          $ref: '#/components/schemas/Sort'
+      required:
+        - totalPages
+        - totalElements
+        - size
+        - number
+        - numberOfElements
+        - last
+        - first
+        - empty
+        - sort
+    Sort:
+      type: object
+      properties:
+        sorted:
+          type: boolean
+          description: true if sorting has been requested for some field
+        unsorted:
+          type: boolean
+          description: true if no sorting has been requested for any field
+        empty:
+          type: boolean
+          description: true if the returned page contains no records, and this field does not apply
+      required:
+        - sorted
+        - unsorted
+        - empty

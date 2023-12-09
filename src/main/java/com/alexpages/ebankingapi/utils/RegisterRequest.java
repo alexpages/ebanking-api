@@ -13,8 +13,11 @@ import com.alexpages.ebankingapi.domain.Account;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequest {
+public class RegisterRequest 
+{
     private String clientName;
+    
     private List<Account> accounts;
-    private String password;
+    
+    private String password;  
 }

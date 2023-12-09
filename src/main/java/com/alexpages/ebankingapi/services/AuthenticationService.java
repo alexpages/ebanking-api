@@ -3,7 +3,6 @@ package com.alexpages.ebankingapi.services;
 import com.alexpages.ebankingapi.domain.Account;
 import com.alexpages.ebankingapi.domain.Client;
 import com.alexpages.ebankingapi.exceptions.EbankingManagerException;
-import com.alexpages.ebankingapi.domain.*;
 import com.alexpages.ebankingapi.utils.AuthenticateRequest;
 import com.alexpages.ebankingapi.utils.AuthenticationResponse;
 import com.alexpages.ebankingapi.utils.ClientRole;
@@ -27,7 +26,9 @@ import java.util.stream.Collectors;
 @Service
 public class AuthenticationService {
 
-    private ClientService clientService;
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
+
+	private ClientService clientService;
     private JwtService jwtService;
     private PasswordEncoder passwordEncoder;
     private AuthenticationManager authenticationManager;
@@ -37,7 +38,7 @@ public class AuthenticationService {
 	    Optional<Client> clientOptional = clientService.findClientByName(request.getClientName());
 	    if (clientOptional.isPresent()){
 	        String errorMessage = "Client with username: " + request.getClientName() + " ,could not be registered because it is already present in the DB";
-	        log.error(errorMessage);
+	        logger.error(errorMessage);
 	        throw new EbankingManagerException(errorMessage);
 	    }
 	    String encodedPassword = passwordEncoder.encode(request.getPassword());
@@ -56,7 +57,7 @@ public class AuthenticationService {
 	    clientService.addClient(client);
 	    var jwtToken = jwtService.generateToken(client);
 	    // Log
-	    log.info("Client registered successfully: {}", client);
+	    logger.info("Client registered successfully: {}", client);
 	    return AuthenticationResponse.builder().token(jwtToken).build();
     }
 
@@ -71,7 +72,7 @@ public class AuthenticationService {
                 .orElseThrow(() -> new UserNotFoundException("Client with username: " + request.getClientName() + " ,could not be authenticated because it has not been registered yet"));
         var jwtToken = jwtService.generateToken(client);
         // Log
-        log.info("Client authenticated successfully: {}", client);
+        logger.info("Client authenticated successfully: {}", client);
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
 

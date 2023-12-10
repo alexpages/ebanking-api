@@ -46,25 +46,9 @@ paths:
                     type: integer
                     example: 1
         '400':
-          description: Bad request. Transaction body does not follow the expected format
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Invalid transaction format"
-        '5XX':
-          description: Internal Server error.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Internal Server Error"
+          $ref: '#/components/responses/400'
+        '500':
+          $ref: '#/components/responses/500'
   /transaction/request:
     post:
       tags:
@@ -87,25 +71,9 @@ paths:
         '204':
           description: No Content
         '400':
-          description: Bad request. Transaction body does not follow the expected format
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Invalid transaction format"
-        '5XX':
-          description: Internal Server error.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Internal Server Error"
+          $ref: '#/components/responses/400'
+        '500':
+          $ref: '#/components/responses/500'
   /client:
     post:
       tags:
@@ -131,26 +99,11 @@ paths:
                     type: string
                     example: client_01
         '400':
-          description: Bad request. Client body does not follow the expected format
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Invalid client format"
-        '5XX':
-          description: Internal Server error.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Internal Server Error"
-  '/client/{clientId}/authenticate':
+          $ref: '#/components/responses/400'
+        '500':
+          $ref: '#/components/responses/500'
+          
+  /client/{clientId}/authenticate:
     post:
       tags:
         - client
@@ -177,26 +130,42 @@ paths:
                     type: string
                     example: jwt0000001
         '404':
-          description: Client not found.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Client not found in database"
-        '5XX':
-          description: Internal Server error.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Internal Server Error"
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
 components:
+  responses:
+    '400':
+      description: Bad request. The request body does not follow the expected format.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+    '500':
+      description: Internal Server Error.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Internal Server Error"
+    '204':
+      description: No Content
+    '404':
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Resource not found"
   parameters:
     PageKey:
       description: Page number to return

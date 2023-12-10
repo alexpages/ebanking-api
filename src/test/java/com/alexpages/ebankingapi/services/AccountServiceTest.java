@@ -1,9 +1,9 @@
 package com.alexpages.ebankingapi.services;
 
-import com.alexpages.ebankingapi.domain.Account;
-import com.alexpages.ebankingapi.domain.Client;
+import com.alexpages.ebankingapi.entity.AccountEntity;
+import com.alexpages.ebankingapi.entity.ClientEntity;
+import com.alexpages.ebankingapi.others.ClientRole;
 import com.alexpages.ebankingapi.repository.AccountRepository;
-import com.alexpages.ebankingapi.utils.ClientRole;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ class AccountServiceTest {
 
     @InjectMocks
     private AccountService underTest;
-    private Client testClient;
+    private ClientEntity testClient;
 
     @BeforeEach
     void setUp(){
@@ -38,27 +38,27 @@ class AccountServiceTest {
         clientService.addClient(testClient);
         // When
         when(underTest.findAccountsByClient(testClient)).thenReturn(testClient.getAccounts());
-        List<Account> foundAccounts = underTest.findAccountsByClient(testClient);
+        List<AccountEntity> foundAccounts = underTest.findAccountsByClient(testClient);
 
         // Then
         verify(accountRepository).findAccountsByClient(testClient);
         assertEquals(testClient.getAccounts(), foundAccounts);
     }
 
-    private Client generateTestClient() {
-        Client testClient = Client.builder()
+    private ClientEntity generateTestClient() {
+        ClientEntity testClient = ClientEntity.builder()
                 .clientRole(ClientRole.USER)
                 .id(1)
                 .name("test")
                 .password("test")
                 .build();
-        Account testAccount = Account.builder()
+        AccountEntity testAccount = AccountEntity.builder()
                 .id(1)
                 .iban("iban")
                 .currency("EUR")
                 .client(testClient)
                 .build();
-        List<Account> accounts = new ArrayList<>();
+        List<AccountEntity> accounts = new ArrayList<>();
         accounts.add(testAccount);
         testClient.setAccounts(accounts);
         return testClient;

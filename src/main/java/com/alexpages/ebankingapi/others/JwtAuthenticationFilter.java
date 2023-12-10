@@ -1,4 +1,4 @@
-package com.alexpages.ebankingapi.utils;
+package com.alexpages.ebankingapi.others;
 
 import com.alexpages.ebankingapi.services.JwtService;
 import jakarta.servlet.FilterChain;

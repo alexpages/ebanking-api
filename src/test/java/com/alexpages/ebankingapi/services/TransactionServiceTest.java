@@ -1,8 +1,8 @@
 package com.alexpages.ebankingapi.services;
 
-import com.alexpages.ebankingapi.domain.Transaction;
+import com.alexpages.ebankingapi.entity.TransactionEntity;
+import com.alexpages.ebankingapi.others.Currency;
 import com.alexpages.ebankingapi.repository.ClientRepository;
-import com.alexpages.ebankingapi.utils.Currency;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +25,7 @@ class TransactionServiceTest {
     @Test
     void itShouldPublishTransaction(){
         // Given
-        Transaction transaction = Transaction.builder()
+        TransactionEntity transaction = TransactionEntity.builder()
                 .date(new Date())
                 .iban("iban")
                 .currency(Currency.EUR)
@@ -34,7 +34,7 @@ class TransactionServiceTest {
                 .build();
 
         // When
-        Transaction sentTransaction = underTest.publishTransactionToTopic(transaction);
+        TransactionEntity sentTransaction = underTest.publishTransactionToTopic(transaction);
 
         // Then
         assertEquals(sentTransaction, transaction);

@@ -1,9 +1,12 @@
 package com.alexpages.ebankingapi.services;
 
-import com.alexpages.ebankingapi.domain.Transaction;
+import com.alexpages.ebankingapi.entity.TransactionEntity;
 import com.alexpages.ebankingapi.exceptions.EbankingManagerException;
+import com.alexpages.ebankingapi.others.TransactionControllerResponse;
 import com.alexpages.ebankingapi.utils.PaginatedList;
-import com.alexpages.ebankingapi.utils.TransactionControllerResponse;
+import com.caixabank.absis.apps.dataservice.cbk.itmanagement.arcchn.service.Slf4j;
+import com.caixabank.absis.apps.dataservice.cbk.itmanagement.arcchn.service.Transactional;
+import com.caixabank.absis.apps.dataservice.cbk.itmanagement.arcchn.service.Validated;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,12 +20,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.transaction.annotation.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
 import java.util.*;
 
+@Slf4j
 @Service
-@RequiredArgsConstructor
+@Transactional
+@Validated
 public class TransactionService {
 	
     private static final Logger logger = LoggerFactory.getLogger(TransactionService.class);
@@ -35,6 +43,7 @@ public class TransactionService {
     private Consumer<String, String> kafkaConsumer;
     private ObjectMapper objectMapper = new ObjectMapper();
 	
+    @Autowired
     public TransactionService(KafkaTemplate<String, String> kafkaTemplate, ClientService clientService,
 			ValidateDataService validateDataService, ExchangeRateService exchangeRateService,
 			Consumer<String, String> kafkaConsumer, ObjectMapper objectMapper) 
@@ -47,7 +56,12 @@ public class TransactionService {
 		this.objectMapper = objectMapper;
 	}
     
-    public Transaction publishTransactionToTopic(Transaction transaction)
+    public TransactionService()
+    {
+    	
+    }
+    
+    public TransactionEntity publishTransactionToTopic(TransactionEntity transaction)
     {
         String clientName = clientService.findClientNameByAccount(transaction.getIban());
 
@@ -73,8 +87,9 @@ public class TransactionService {
 
     // CONSUMER
 
-    public TransactionControllerResponse getPaginatedTransactionListByUserAndDate(int pageSize, String clientName, int year, int month){
-        List<Transaction> transactionList = consumeTransactionsFromTopic(clientName,year,month);
+    public TransactionControllerResponse getPaginatedTransactionListByUserAndDate(int pageSize, String clientName, int year, int month)
+    {
+        List<TransactionEntity> transactionList = consumeTransactionsFromTopic(clientName,year,month);
         int transactionAmount = transactionList.size();
         int requiredPages = (int) Math.ceil((double) transactionAmount / pageSize);
 
@@ -83,7 +98,7 @@ public class TransactionService {
         int end = pageSize;
 
         for (int i = 0; i< requiredPages; i++){
-            List<Transaction> transactionsOfPage = transactionList.subList(beginning, Math.min(end, transactionAmount));
+            List<TransactionEntity> transactionsOfPage = transactionList.subList(beginning, Math.min(end, transactionAmount));
             int currentPageNo = i+1;
             PaginatedList paginatedList = PaginatedList.builder()
                     .transactions(transactionsOfPage)
@@ -103,13 +118,13 @@ public class TransactionService {
         return transactionControllerResponse;
     }
 
-    public float calculateDebitCreditScore (List<Transaction> transactionsList){
-    	
+    public float calculateDebitCreditScore (List<TransactionEntity> transactionsList)
+    {
         String currencyRates = exchangeRateService.getCurrentExchangeRateBaseUSD();
         float debit_credit_score = 0;
         try{
             JsonNode responseJson = objectMapper.readTree(currencyRates);
-            for (Transaction transaction : transactionsList) {
+            for (TransactionEntity transaction : transactionsList) {
                 String currentCurrency = String.valueOf(transaction.getCurrency());
                 double currentAmount = transaction.getAmount();
 
@@ -132,7 +147,7 @@ public class TransactionService {
         }
     }
 
-    public List<Transaction> consumeTransactionsFromTopic(String clientName, int year, int month){
+    public List<TransactionEntity> consumeTransactionsFromTopic(String clientName, int year, int month){
         if (!validateDataService.validateYear(year)) {
             // Log
             logger.error("Year value {} from request is invalid", year);
@@ -156,7 +171,7 @@ public class TransactionService {
         kafkaConsumer.assign(List.of(partition));
 
         //Obtain data
-        List<Transaction> transactionsList = new ArrayList<>();
+        List<TransactionEntity> transactionsList = new ArrayList<>();
 
         //Poll for records starting from beginning (0) of the partition
         kafkaConsumer.seek(partition, 0);
@@ -164,7 +179,7 @@ public class TransactionService {
         do{
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
                 try {
-                    Transaction transaction = objectMapper.readValue(consumerRecord.value(), Transaction.class);
+                    TransactionEntity transaction = objectMapper.readValue(consumerRecord.value(), TransactionEntity.class);
                     transactionsList.add(transaction);
                 } catch (JsonProcessingException e) {
                     // Log

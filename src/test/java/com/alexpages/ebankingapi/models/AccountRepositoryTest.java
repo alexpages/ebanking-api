@@ -1,10 +1,10 @@
 package com.alexpages.ebankingapi.models;
 
-import com.alexpages.ebankingapi.domain.Account;
-import com.alexpages.ebankingapi.domain.Client;
+import com.alexpages.ebankingapi.entity.AccountEntity;
+import com.alexpages.ebankingapi.entity.ClientEntity;
+import com.alexpages.ebankingapi.others.ClientRole;
 import com.alexpages.ebankingapi.repository.AccountRepository;
 import com.alexpages.ebankingapi.services.ClientService;
-import com.alexpages.ebankingapi.utils.ClientRole;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,32 +30,32 @@ class AccountRepositoryTest {
     @Test
     void itShouldFindAccountsByClient() {
         // Given
-        Client testClient = generateTestClient();
+        ClientEntity testClient = generateTestClient();
 
         // When
         when(clientService.addClient(testClient)).thenReturn(testClient);
         clientService.addClient(testClient);
 
-        List<Account> accounts = underTest.findAccountsByClient(testClient);
+        List<AccountEntity> accounts = underTest.findAccountsByClient(testClient);
 
         // Then
         assertThat(accounts).isNotNull();
     }
 
-    private Client generateTestClient() {
-        Client testClient = Client.builder()
+    private ClientEntity generateTestClient() {
+        ClientEntity testClient = ClientEntity.builder()
                 .clientRole(ClientRole.USER)
                 .id(1)
                 .name("test")
                 .password("test")
                 .build();
-        Account testAccount = Account.builder()
+        AccountEntity testAccount = AccountEntity.builder()
                 .id(1)
                 .iban("iban")
                 .currency("EUR")
                 .client(testClient)
                 .build();
-        List<Account> accounts = new ArrayList<>();
+        List<AccountEntity> accounts = new ArrayList<>();
         accounts.add(testAccount);
         testClient.setAccounts(accounts);
         return testClient;

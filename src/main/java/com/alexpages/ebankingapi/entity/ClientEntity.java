@@ -1,4 +1,4 @@
-package com.alexpages.ebankingapi.domain;
+package com.alexpages.ebankingapi.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,37 +6,45 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.alexpages.ebankingapi.utils.ClientRole;
+import com.alexpages.ebankingapi.others.ClientRole;
+import com.caixabank.absis.apps.dataservice.cbk.itmanagement.arcchn.entity.Column;
+import com.caixabank.absis.apps.dataservice.cbk.itmanagement.arcchn.entity.GeneratedValue;
+import com.caixabank.absis.apps.dataservice.cbk.itmanagement.arcchn.entity.Id;
+import com.caixabank.absis.apps.dataservice.cbk.itmanagement.arcchn.entity.SequenceGenerator;
 
 import java.util.Collection;
 import java.util.List;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Data @AllArgsConstructor @NoArgsConstructor @Builder
 @Entity
-@Table(name = "client")
-public class Client implements UserDetails {
+@Table(name = "TDE_CLIENT")
+public class ClientEntity implements UserDetails {
 
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
+	
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_CLIENT")
+    @SequenceGenerator(sequenceName = "SEQ_CLIENT", allocationSize = 1, name = "SEQ_CLIENT")
+	@Column(name = "ID")
     private Integer id;
     
+	@Column(name = "NAME", unique = true)
     private String name;
    
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "client_id")
-    private List<Account> accounts;
+    private List<AccountEntity> accounts;
     
+    @Column(name = "PASSWORD")
     private String password;
     
+    
     @Enumerated(EnumType.STRING)
+    @Column(name = "ROLE")
     private ClientRole clientRole;
 
     @Override

@@ -162,6 +162,11 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.apages</groupId>
+			<artifactId>spring-batch</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<!-- Build Plugins -->
@@ -181,21 +186,23 @@
 							<inputSpec>
 								${project.basedir}/contract/swagger-micro-contract.yaml</inputSpec>
 							<templateDirectory>${project.basedir}/templates</templateDirectory>
-							<generatorName>java</generatorName>
+							<generatorName>spring</generatorName>
 							<apiPackage>com.alexpages.ebankingapi.api</apiPackage>
-							<modelPackage>com.alexpages.ebankingapi.model</modelPackage>
-							<supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate>
+							<modelPackage>com.alexpages.ebankingapi.domain</modelPackage>
 							<generateApiTests>false</generateApiTests>
 							<generateModelTests>false</generateModelTests>
 							<configOptions>
-								<serializableModel>false</serializableModel>
-								<apiDocs>false</apiDocs>
-								<generateApis>true</generateApis>
-								<auth>false</auth>
+								<interfaceOnly>true</interfaceOnly>
 								<useBeanValidation>true</useBeanValidation>
+								<dateLibrary>java8-localdatetime</dateLibrary>
+								<useTags>true</useTags>
+								<library>spring-boot</library>
+								<serializableModel>true</serializableModel>
+								<apiDocs>false</apiDocs>
+								<auth>false</auth>
 								<hideGenerationTimestamp>true</hideGenerationTimestamp>
-								<dateLibrary>java8</dateLibrary>
 								<java8>true</java8>
+								<useJakartaEe>true</useJakartaEe>
 							</configOptions>
 							<output>${project.basedir}</output>
 						</configuration>

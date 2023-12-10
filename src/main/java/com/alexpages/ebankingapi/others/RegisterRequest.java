@@ -1,4 +1,4 @@
-package com.alexpages.ebankingapi.utils;
+package com.alexpages.ebankingapi.others;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-import com.alexpages.ebankingapi.domain.Account;
+import com.alexpages.ebankingapi.entity.AccountEntity;
 
 @Data
 @Builder
@@ -17,7 +17,7 @@ public class RegisterRequest
 {
     private String clientName;
     
-    private List<Account> accounts;
+    private List<AccountEntity> accounts;
     
     private String password;  
 }

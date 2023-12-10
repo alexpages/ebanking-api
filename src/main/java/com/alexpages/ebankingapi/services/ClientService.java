@@ -1,6 +1,6 @@
 package com.alexpages.ebankingapi.services;
 
-import com.alexpages.ebankingapi.domain.Client;
+import com.alexpages.ebankingapi.entity.ClientEntity;
 import com.alexpages.ebankingapi.exceptions.EbankingManagerException;
 import com.alexpages.ebankingapi.repository.ClientRepository;
 
@@ -17,16 +17,16 @@ public class ClientService {
 		this.clientRepository = clientRepository;
 	}
 
-	public Optional<Client> findClientByName(String name){
+	public Optional<ClientEntity> findClientByName(String name){
         return clientRepository.findClientByName(name);
     }
 
-    public Client addClient (Client client){
+    public ClientEntity addClient (ClientEntity client){
         return clientRepository.save(client);
     }
 
-    public Client findClientByAccount(String iban){
-        Client foundClient = clientRepository.findClientByAccount(iban);
+    public ClientEntity findClientByAccount(String iban){
+        ClientEntity foundClient = clientRepository.findClientByAccount(iban);
         if (foundClient==null){
             throw new EbankingManagerException("Client with iban: "+ iban+ ", could not be found");
         }

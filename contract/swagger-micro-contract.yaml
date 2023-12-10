@@ -15,16 +15,14 @@ info:
 servers:
   - url: 'http://localhost:3000'
 tags:
-  - name: transaction
-    description: Endpoints related to transaction management
-  - name: client
-    description: Endpoints for client management and authentication
+  - name: ebanking
+    description: Endpoints related to transaction and client management
 
 paths:
   /transaction:
     post:
       tags:
-        - transaction
+        - ebanking
       summary: Add a new transaction
       description: This method allows you to post a **new transaction** to a Kafka topic with a concept in it.
       operationId: addTransaction
@@ -52,7 +50,7 @@ paths:
   /transaction/request:
     post:
       tags:
-        - transaction
+        - ebanking
       summary: Get transactions with pagination
       description: Retrieve transactions based on search criteria with pagination.
       operationId: getTransactions
@@ -77,7 +75,7 @@ paths:
   /client:
     post:
       tags:
-        - client
+        - ebanking
       summary: Add a New Client
       description: Create a new client profile.
       operationId: addClient
@@ -106,7 +104,7 @@ paths:
   /client/{clientId}/authenticate:
     post:
       tags:
-        - client
+        - ebanking
       summary: Authenticate a client
       description: This method allows you to retrieve a **JWT** for the client.
       operationId: authenticateClient

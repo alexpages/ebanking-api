@@ -1,7 +1,9 @@
-package com.alexpages.ebankingapi.utils;
+package com.alexpages.ebankingapi.others;
 
 import lombok.*;
 import java.util.List;
+
+import com.alexpages.ebankingapi.utils.PaginatedList;
 
 @Getter
 @Setter

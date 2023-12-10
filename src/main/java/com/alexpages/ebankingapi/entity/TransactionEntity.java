@@ -1,17 +1,14 @@
-package com.alexpages.ebankingapi.domain;
+package com.alexpages.ebankingapi.entity;
 
-import com.alexpages.ebankingapi.utils.Currency;
+import com.alexpages.ebankingapi.others.Currency;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Data 
-@AllArgsConstructor 
-@NoArgsConstructor 
-@Builder
-public class Transaction {
+@Data @AllArgsConstructor @NoArgsConstructor @Builder
+public class TransactionEntity {
 
     private String id;                      // Unique identifier (e.g. 89d3o179-abcd-465b-o9ee-e2d5f6ofEld46)
     

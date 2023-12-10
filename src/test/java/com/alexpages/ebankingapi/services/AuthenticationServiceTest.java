@@ -1,12 +1,12 @@
 package com.alexpages.ebankingapi.services;
 
-import com.alexpages.ebankingapi.domain.Account;
-import com.alexpages.ebankingapi.domain.Client;
+import com.alexpages.ebankingapi.entity.AccountEntity;
+import com.alexpages.ebankingapi.entity.ClientEntity;
 import com.alexpages.ebankingapi.exceptions.EbankingManagerException;
 import com.alexpages.ebankingapi.exceptions.UserNotFoundException;
-import com.alexpages.ebankingapi.utils.AuthenticateRequest;
-import com.alexpages.ebankingapi.utils.AuthenticationResponse;
-import com.alexpages.ebankingapi.utils.RegisterRequest;
+import com.alexpages.ebankingapi.others.AuthenticateRequest;
+import com.alexpages.ebankingapi.others.AuthenticationResponse;
+import com.alexpages.ebankingapi.others.RegisterRequest;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ class AuthenticationServiceTest {
     @Test
     void itShouldRegisterClient() {
         // Given
-        Account account = Mockito.mock(Account.class);
+        AccountEntity account = Mockito.mock(AccountEntity.class);
         RegisterRequest request = RegisterRequest.builder()
                 .clientName("test")
                 .password("password")
@@ -51,7 +51,7 @@ class AuthenticationServiceTest {
         // When
         when(clientService.findClientByName(anyString())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-        when(jwtService.generateToken(any(Client.class))).thenReturn("jwtToken");
+        when(jwtService.generateToken(any(ClientEntity.class))).thenReturn("jwtToken");
         AuthenticationResponse response = underTest.register(request);
 
         // Then
@@ -62,7 +62,7 @@ class AuthenticationServiceTest {
     void itShouldNotRegisterClient() {
         // Given
         String clientName = "existingClient";
-        Account account = Mockito.mock(Account.class);
+        AccountEntity account = Mockito.mock(AccountEntity.class);
         RegisterRequest request = RegisterRequest.builder()
                 .clientName(clientName)
                 .password("password")
@@ -70,7 +70,7 @@ class AuthenticationServiceTest {
                 .build();
 
         // When
-        Client existingClient = Client.builder().name(clientName).build();
+        ClientEntity existingClient = ClientEntity.builder().name(clientName).build();
         when(clientService.findClientByName(clientName)).thenReturn(Optional.of(existingClient));
 
         // Then
@@ -93,8 +93,8 @@ class AuthenticationServiceTest {
 
         // When
         when(authenticationManager.authenticate(authentication)).thenReturn(authentication);
-        when(clientService.findClientByName(request.getClientName())).thenReturn(Optional.of(new Client()));
-        when(jwtService.generateToken(any(Client.class))).thenReturn("jwtToken");
+        when(clientService.findClientByName(request.getClientName())).thenReturn(Optional.of(new ClientEntity()));
+        when(jwtService.generateToken(any(ClientEntity.class))).thenReturn("jwtToken");
 
         // Then
         AuthenticationResponse response = underTest.authenticate(request);

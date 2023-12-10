@@ -1,9 +1,9 @@
 package com.alexpages.ebankingapi.models;
 
-import com.alexpages.ebankingapi.domain.Account;
-import com.alexpages.ebankingapi.domain.Client;
+import com.alexpages.ebankingapi.entity.AccountEntity;
+import com.alexpages.ebankingapi.entity.ClientEntity;
+import com.alexpages.ebankingapi.others.ClientRole;
 import com.alexpages.ebankingapi.repository.ClientRepository;
-import com.alexpages.ebankingapi.utils.ClientRole;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,10 +33,10 @@ class ClientRepositoryTest {
     @Test
     void itShouldAddClient(){
         // Given
-        Client testClient = generateTestClient();
+        ClientEntity testClient = generateTestClient();
 
         // When
-        Client savedClient = underTest.save(testClient);
+        ClientEntity savedClient = underTest.save(testClient);
 
         // Then
         assertEquals(savedClient.getName(), testClient.getName());
@@ -46,11 +46,11 @@ class ClientRepositoryTest {
     @Test
     void itShouldFindClientByName() {
         // Given
-        Client testClient = generateTestClient();
+        ClientEntity testClient = generateTestClient();
         underTest.save(testClient);
 
         // When
-        Optional<Client> foundClient = underTest.findClientByName(testClient.getName());
+        Optional<ClientEntity> foundClient = underTest.findClientByName(testClient.getName());
 
         // Then
         assertNotNull(foundClient);
@@ -59,10 +59,10 @@ class ClientRepositoryTest {
     @Test
     void itShouldNotFindClientByName() {
         // Given
-        Client testClient = generateTestClient();
+        ClientEntity testClient = generateTestClient();
 
         // When
-        Optional<Client> foundClient = underTest.findClientByName(testClient.getName());
+        Optional<ClientEntity> foundClient = underTest.findClientByName(testClient.getName());
 
         // Then
         assertThat(foundClient).isEmpty();
@@ -71,11 +71,11 @@ class ClientRepositoryTest {
     @Test
     void itShouldFindClientByAccount(){
         // Given
-        Client testClient = generateTestClient();
+        ClientEntity testClient = generateTestClient();
         underTest.save(testClient);
 
         // When
-        Client foundClient = underTest.findClientByAccount("iban");
+        ClientEntity foundClient = underTest.findClientByAccount("iban");
 
         // Then
         assertThat(foundClient).isNotNull();
@@ -84,10 +84,10 @@ class ClientRepositoryTest {
     @Test
     void itShouldNotFindClientByAccount(){
         // Given
-        Client testClient = generateTestClient();
+        ClientEntity testClient = generateTestClient();
 
         // When
-        Client foundClient = underTest.findClientByAccount("iban");
+        ClientEntity foundClient = underTest.findClientByAccount("iban");
 
         // Then
         assertThat(foundClient).isNull();
@@ -95,20 +95,20 @@ class ClientRepositoryTest {
 
 
 
-    private Client generateTestClient() {
-        Client testClient = Client.builder()
+    private ClientEntity generateTestClient() {
+        ClientEntity testClient = ClientEntity.builder()
                 .clientRole(ClientRole.USER)
                 .id(1)
                 .name("test")
                 .password("test")
                 .build();
-        Account testAccount = Account.builder()
+        AccountEntity testAccount = AccountEntity.builder()
                 .id(1)
                 .iban("iban")
                 .currency("EUR")
                 .client(testClient)
                 .build();
-        List<Account> accounts = new ArrayList<>();
+        List<AccountEntity> accounts = new ArrayList<>();
         accounts.add(testAccount);
         testClient.setAccounts(accounts);
         return testClient;

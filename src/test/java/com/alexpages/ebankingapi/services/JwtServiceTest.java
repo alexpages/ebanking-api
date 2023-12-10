@@ -1,8 +1,8 @@
 package com.alexpages.ebankingapi.services;
 
-import com.alexpages.ebankingapi.domain.Account;
-import com.alexpages.ebankingapi.domain.Client;
-import com.alexpages.ebankingapi.utils.ClientRole;
+import com.alexpages.ebankingapi.entity.AccountEntity;
+import com.alexpages.ebankingapi.entity.ClientEntity;
+import com.alexpages.ebankingapi.others.ClientRole;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +19,7 @@ class JwtServiceTest {
 
     @Autowired
     private JwtService underTest;
-    private Client client;
+    private ClientEntity client;
 
     @BeforeEach
     void setUp(){
@@ -58,20 +58,20 @@ class JwtServiceTest {
         assertTrue(result);
     }
 
-    private Client generateTestClient() {
-        Client testClient = Client.builder()
+    private ClientEntity generateTestClient() {
+        ClientEntity testClient = ClientEntity.builder()
                 .clientRole(ClientRole.USER)
                 .id(1)
                 .name("test")
                 .password("test")
                 .build();
-        Account testAccount = Account.builder()
+        AccountEntity testAccount = AccountEntity.builder()
                 .id(1)
                 .iban("iban")
                 .currency("EUR")
                 .client(testClient)
                 .build();
-        List<Account> accounts = new ArrayList<>();
+        List<AccountEntity> accounts = new ArrayList<>();
         accounts.add(testAccount);
         testClient.setAccounts(accounts);
         return testClient;

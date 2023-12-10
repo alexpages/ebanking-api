@@ -1,4 +1,4 @@
-package com.alexpages.ebankingapi.domain;
+package com.alexpages.ebankingapi.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "accounts")
-public class Account {
+public class AccountEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -17,6 +17,6 @@ public class Account {
     private String currency;
     @ManyToOne
     @JoinColumn(name = "client_id")
-    private Client client;
+    private ClientEntity client;
 
 }

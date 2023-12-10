@@ -1,9 +1,9 @@
 package com.alexpages.ebankingapi.services;
 
-import com.alexpages.ebankingapi.domain.Account;
-import com.alexpages.ebankingapi.domain.Client;
+import com.alexpages.ebankingapi.entity.AccountEntity;
+import com.alexpages.ebankingapi.entity.ClientEntity;
+import com.alexpages.ebankingapi.others.ClientRole;
 import com.alexpages.ebankingapi.repository.ClientRepository;
-import com.alexpages.ebankingapi.utils.ClientRole;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,28 +29,28 @@ class ClientServiceTest {
     @Test
     void canAddClient() {
         // Given
-        Client testClient = generateTestClient();
+        ClientEntity testClient = generateTestClient();
 
         // When
         underTest.addClient(testClient);
 
         // Then
-        ArgumentCaptor<Client> clientArgumentCaptor = ArgumentCaptor.forClass(Client.class);
+        ArgumentCaptor<ClientEntity> clientArgumentCaptor = ArgumentCaptor.forClass(ClientEntity.class);
         verify(clientRepository).save(clientArgumentCaptor.capture());
 
-        Client capturedClient = clientArgumentCaptor.getValue();
+        ClientEntity capturedClient = clientArgumentCaptor.getValue();
         assertThat(capturedClient).isEqualTo(testClient);
     }
 
     @Test
     void itShouldFindClientByName() {
         // Given
-        Client testClient = generateTestClient();
-        Optional<Client> expectedClient = Optional.of(testClient);
+        ClientEntity testClient = generateTestClient();
+        Optional<ClientEntity> expectedClient = Optional.of(testClient);
 
         // When
         when(underTest.findClientByName(testClient.getName())).thenReturn(Optional.ofNullable(testClient));
-        Optional<Client> foundClient = underTest.findClientByName(testClient.getName());
+        Optional<ClientEntity> foundClient = underTest.findClientByName(testClient.getName());
 
         // Then
         verify(clientRepository).findClientByName(testClient.getName());
@@ -60,12 +60,12 @@ class ClientServiceTest {
     @Test
     void itShouldFindClientByAccount() {
         // Given
-        Client testClient = generateTestClient();
+        ClientEntity testClient = generateTestClient();
         String account = testClient.getAccounts().get(0).getIban();
 
         // When
         when(clientRepository.findClientByAccount(account)).thenReturn(testClient);
-        Client foundClient = underTest.findClientByAccount(account);
+        ClientEntity foundClient = underTest.findClientByAccount(account);
 
         // Then
         verify(clientRepository).findClientByAccount(account);
@@ -89,20 +89,20 @@ class ClientServiceTest {
         verify(clientRepository).findClientByAccount(nonExistentIban);
     }
 
-    private Client generateTestClient() {
-        Client testClient = Client.builder()
+    private ClientEntity generateTestClient() {
+        ClientEntity testClient = ClientEntity.builder()
                 .clientRole(ClientRole.USER)
                 .id(1)
                 .name("test")
                 .password("test")
                 .build();
-        Account testAccount = Account.builder()
+        AccountEntity testAccount = AccountEntity.builder()
                 .id(1)
                 .iban("iban")
                 .currency("EUR")
                 .client(testClient)
                 .build();
-        List<Account> accounts = new ArrayList<>();
+        List<AccountEntity> accounts = new ArrayList<>();
         accounts.add(testAccount);
         testClient.setAccounts(accounts);
         return testClient;

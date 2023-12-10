@@ -1,7 +1,7 @@
 package com.alexpages.ebankingapi.services;
 
-import com.alexpages.ebankingapi.domain.Account;
-import com.alexpages.ebankingapi.domain.Client;
+import com.alexpages.ebankingapi.entity.AccountEntity;
+import com.alexpages.ebankingapi.entity.ClientEntity;
 import com.alexpages.ebankingapi.repository.AccountRepository;
 
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class AccountService
 		this.accountRepository = accountRepository;
 	}
 
-    public List<Account> findAccountsByClient(Client client){
+    public List<AccountEntity> findAccountsByClient(ClientEntity client){
         return accountRepository.findAccountsByClient(client);
     }
 }

@@ -3,7 +3,7 @@ package com.alexpages.ebankingapi.utils;
 import lombok.*;
 import java.util.List;
 
-import com.alexpages.ebankingapi.domain.Transaction;
+import com.alexpages.ebankingapi.entity.TransactionEntity;
 
 @Getter
 @Setter
@@ -11,7 +11,7 @@ import com.alexpages.ebankingapi.domain.Transaction;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaginatedList {
-    private List<Transaction> transactions;
+    private List<TransactionEntity> transactions;
     private float debitCreditScore;
     private int pageNo;
 }

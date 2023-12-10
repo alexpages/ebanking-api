@@ -1,4 +1,4 @@
-package com.alexpages.ebankingapi.services;
+package com.alexpages.ebankingapi.service;
 
 import com.alexpages.ebankingapi.entity.AccountEntity;
 import com.alexpages.ebankingapi.entity.ClientEntity;

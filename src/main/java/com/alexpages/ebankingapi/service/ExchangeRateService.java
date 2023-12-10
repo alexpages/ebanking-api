@@ -1,4 +1,4 @@
-package com.alexpages.ebankingapi.services;
+package com.alexpages.ebankingapi.service;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.alexpages.ebankingapi.exceptions.EbankingManagerException;
+import com.alexpages.ebankingapi.error.EbankingManagerException;
 
 import java.io.BufferedReader;
 import java.io.IOException;

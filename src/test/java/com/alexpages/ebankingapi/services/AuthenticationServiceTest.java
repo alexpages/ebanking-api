@@ -2,11 +2,14 @@ package com.alexpages.ebankingapi.services;
 
 import com.alexpages.ebankingapi.entity.AccountEntity;
 import com.alexpages.ebankingapi.entity.ClientEntity;
-import com.alexpages.ebankingapi.exceptions.EbankingManagerException;
-import com.alexpages.ebankingapi.exceptions.UserNotFoundException;
+import com.alexpages.ebankingapi.error.EbankingManagerException;
+import com.alexpages.ebankingapi.error.UserNotFoundException;
 import com.alexpages.ebankingapi.others.AuthenticateRequest;
 import com.alexpages.ebankingapi.others.AuthenticationResponse;
 import com.alexpages.ebankingapi.others.RegisterRequest;
+import com.alexpages.ebankingapi.service.AuthenticationService;
+import com.alexpages.ebankingapi.service.ClientService;
+import com.alexpages.ebankingapi.service.JwtService;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

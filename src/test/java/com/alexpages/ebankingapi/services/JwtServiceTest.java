@@ -3,6 +3,7 @@ package com.alexpages.ebankingapi.services;
 import com.alexpages.ebankingapi.entity.AccountEntity;
 import com.alexpages.ebankingapi.entity.ClientEntity;
 import com.alexpages.ebankingapi.others.ClientRole;
+import com.alexpages.ebankingapi.service.JwtService;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

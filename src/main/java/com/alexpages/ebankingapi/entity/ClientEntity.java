@@ -7,11 +7,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.alexpages.ebankingapi.others.ClientRole;
-import com.caixabank.absis.apps.dataservice.cbk.itmanagement.arcchn.entity.Column;
-import com.caixabank.absis.apps.dataservice.cbk.itmanagement.arcchn.entity.GeneratedValue;
-import com.caixabank.absis.apps.dataservice.cbk.itmanagement.arcchn.entity.Id;
-import com.caixabank.absis.apps.dataservice.cbk.itmanagement.arcchn.entity.SequenceGenerator;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -49,7 +46,7 @@ public class ClientEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(clientRole.name()));
+    	return Arrays.asList(new SimpleGrantedAuthority(clientRole.name()));
     }
 
     @Override

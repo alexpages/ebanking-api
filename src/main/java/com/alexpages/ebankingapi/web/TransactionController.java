@@ -3,7 +3,7 @@ package com.alexpages.ebankingapi.web;
 
 import com.alexpages.ebankingapi.entity.TransactionEntity;
 import com.alexpages.ebankingapi.others.TransactionControllerRequest;
-import com.alexpages.ebankingapi.services.TransactionService;
+import com.alexpages.ebankingapi.service.TransactionService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

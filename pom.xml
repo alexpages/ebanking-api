@@ -162,11 +162,6 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.apages</groupId>
-			<artifactId>spring-batch</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 	</dependencies>
 
 	<!-- Build Plugins -->
@@ -191,7 +186,9 @@
 							<modelPackage>com.alexpages.ebankingapi.domain</modelPackage>
 							<generateApiTests>false</generateApiTests>
 							<generateModelTests>false</generateModelTests>
+							<generateSupportingFiles>false</generateSupportingFiles>
 							<configOptions>
+								<skipDefaultInterface>true</skipDefaultInterface>
 								<interfaceOnly>true</interfaceOnly>
 								<useBeanValidation>true</useBeanValidation>
 								<dateLibrary>java8-localdatetime</dateLibrary>

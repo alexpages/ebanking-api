@@ -3,6 +3,8 @@ package com.alexpages.ebankingapi.services;
 import com.alexpages.ebankingapi.entity.TransactionEntity;
 import com.alexpages.ebankingapi.others.Currency;
 import com.alexpages.ebankingapi.repository.ClientRepository;
+import com.alexpages.ebankingapi.service.ClientService;
+import com.alexpages.ebankingapi.service.TransactionService;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

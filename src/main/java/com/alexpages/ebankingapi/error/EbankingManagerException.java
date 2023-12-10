@@ -1,4 +1,4 @@
-package com.alexpages.ebankingapi.exceptions;
+package com.alexpages.ebankingapi.error;
 
 public class EbankingManagerException extends RuntimeException{
     /**

@@ -1,12 +1,11 @@
-package com.alexpages.ebankingapi.services;
+package com.alexpages.ebankingapi.service;
 
+import com.alexpages.ebankingapi.domain.Transaction;
 import com.alexpages.ebankingapi.entity.TransactionEntity;
-import com.alexpages.ebankingapi.exceptions.EbankingManagerException;
+import com.alexpages.ebankingapi.error.EbankingManagerException;
 import com.alexpages.ebankingapi.others.TransactionControllerResponse;
+import com.alexpages.ebankingapi.utils.DateUtils;
 import com.alexpages.ebankingapi.utils.PaginatedList;
-import com.caixabank.absis.apps.dataservice.cbk.itmanagement.arcchn.service.Slf4j;
-import com.caixabank.absis.apps.dataservice.cbk.itmanagement.arcchn.service.Transactional;
-import com.caixabank.absis.apps.dataservice.cbk.itmanagement.arcchn.service.Validated;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,7 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -61,17 +63,18 @@ public class TransactionService {
     	
     }
     
-    public TransactionEntity publishTransactionToTopic(TransactionEntity transaction)
+    public Transaction publishTransactionToTopic(Transaction transaction)
     {
+    	
         String clientName = clientService.findClientNameByAccount(transaction.getIban());
 
-        calendar.setTime(transaction.getDate());
+        calendar.setTime(DateUtils.localDateToDate(transaction.getDate()));
         int transactionPartitionMonth = calendar.get(Calendar.MONTH);                   //will be the partition of the topic
         int transactionYear = calendar.get(Calendar.YEAR);                              //will help define the topic
         String transactionTopic = "transactions-" + transactionYear + "-" + clientName; //topic
 
         try {
-            String messageKey = transaction.getId();
+            String messageKey = transaction.getIban();
             String messageValue = objectMapper.writeValueAsString(transaction);
             // Send transaction to topic
             kafkaTemplate.send(transactionTopic, transactionPartitionMonth, messageKey, messageValue);
@@ -168,7 +171,7 @@ public class TransactionService {
         //Calendar sets January to 0. It is necessary to substract 1
         int kafkaPartition = month-1;
         TopicPartition partition = new TopicPartition(kafkaTopic, kafkaPartition);
-        kafkaConsumer.assign(List.of(partition));
+        kafkaConsumer.assign(Arrays.asList(partition));
 
         //Obtain data
         List<TransactionEntity> transactionsList = new ArrayList<>();

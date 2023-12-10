@@ -1,8 +1,8 @@
-package com.alexpages.ebankingapi.services;
+package com.alexpages.ebankingapi.service;
 
 import com.alexpages.ebankingapi.entity.AccountEntity;
 import com.alexpages.ebankingapi.entity.ClientEntity;
-import com.alexpages.ebankingapi.exceptions.EbankingManagerException;
+import com.alexpages.ebankingapi.error.EbankingManagerException;
 import com.alexpages.ebankingapi.others.AuthenticateRequest;
 import com.alexpages.ebankingapi.others.AuthenticationResponse;
 import com.alexpages.ebankingapi.others.ClientRole;

@@ -1,4 +1,4 @@
-package com.alexpages.ebankingapi.services;
+package com.alexpages.ebankingapi.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

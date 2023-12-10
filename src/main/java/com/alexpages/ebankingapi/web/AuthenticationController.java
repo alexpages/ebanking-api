@@ -3,7 +3,7 @@ package com.alexpages.ebankingapi.web;
 import com.alexpages.ebankingapi.others.AuthenticateRequest;
 import com.alexpages.ebankingapi.others.AuthenticationResponse;
 import com.alexpages.ebankingapi.others.RegisterRequest;
-import com.alexpages.ebankingapi.services.AuthenticationService;
+import com.alexpages.ebankingapi.service.AuthenticationService;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;

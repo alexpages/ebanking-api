@@ -11,73 +11,32 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequiredArgsConstructor
-@SecurityRequirement(name = "bearerAuth")
-@Tag(name = "Transaction Controller")
-@RequestMapping("/api/v1/transaction")
 public class TransactionController {
 
-    private final TransactionService transactionService;
+    private TransactionService transactionService;
+    
+    @Autowired
+    public TransactionController(TransactionService transactionService)
+    {
+    	this.transactionService = transactionService;
+    }
 
-    @Operation(
-            description = "Publish money account transactions form an user. It requires a jwt token to perform this operation",
-            summary = "Publish transactions to the system",
-            responses = {
-                    @ApiResponse(
-                            description = "Success",
-                            responseCode = "200"
-                    ),
-                    @ApiResponse(
-                            description = "Bad request",
-                            responseCode = "400"
-                    ),
-                    @ApiResponse(
-                            description = "Unauthorized",
-                            responseCode = "403"
-                    )
-            },
-            parameters = {
-                    @Parameter(
-                            name = "Transaction", description = "The transaction object to be published"
-                    )
-            }
-    )
     @PostMapping("/publish")
     public ResponseEntity<?> publishTransactionToTopic(@RequestBody TransactionEntity transaction){
         try{
-            return ResponseEntity.ok(transactionService.publishTransactionToTopic(transaction));
+	        	return ResponseEntity.ok(transactionService.publishTransactionToTopic(transaction));
         } catch (Exception jsonProcessingException){
             return ResponseEntity.status(500).body(jsonProcessingException.getMessage());
         }
     }
 
-    @Operation(
-            description = "Retrieve a paginated list of money account transactions from an specific month an year of an existing user. It requires a jwt token to perform this operation",
-            summary = "Gets paginated list of user transactions",
-            responses = {
-                    @ApiResponse(
-                            description = "Success",
-                            responseCode = "200"
-                    ),
-                    @ApiResponse(
-                            description = "Bad request",
-                            responseCode = "400"
-                    ),
-                    @ApiResponse(
-                            description = "Unauthorized",
-                            responseCode = "403"
-                    )
-            },
-            parameters = {
-                    @Parameter(
-                            name = "transactionControllerRequest", description = "It is a custom request object, see TransactionControllerRequest.java for more info"
-                    )
-            }
-    )
+
     @GetMapping("/")
     public ResponseEntity<?> getPaginatedTransactionListByUserAndDate(@RequestBody TransactionControllerRequest transactionControllerRequest){
         //Obtain query parameters

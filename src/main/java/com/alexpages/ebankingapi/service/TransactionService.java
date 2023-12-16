@@ -34,8 +34,6 @@ import java.util.List;
 @Transactional
 @Validated
 public class TransactionService {
-	
-    private static final Logger logger = LoggerFactory.getLogger(TransactionService.class);
 
 	private KafkaTemplate<String, String> kafkaTemplate;
     private ClientService clientService;
@@ -64,10 +62,9 @@ public class TransactionService {
     }
     
     public Transaction publishTransactionToTopic(Transaction transaction)
-    {
-    	
+    {    	
         String clientName = clientService.findClientNameByAccount(transaction.getIban());
-
+        
         calendar.setTime(DateUtils.localDateToDate(transaction.getDate()));
         int transactionPartitionMonth = calendar.get(Calendar.MONTH);                   //will be the partition of the topic
         int transactionYear = calendar.get(Calendar.YEAR);                              //will help define the topic
@@ -78,18 +75,17 @@ public class TransactionService {
             String messageValue = objectMapper.writeValueAsString(transaction);
             // Send transaction to topic
             kafkaTemplate.send(transactionTopic, transactionPartitionMonth, messageKey, messageValue);
-            // Log
-            logger.info("Transaction {} has been published", transaction);
+
+            log.info("Transaction {} has been published", transaction);
             return transaction;
         } catch (JsonProcessingException e) {
-            // Log
-            logger.error("Transaction {} could not be published", transaction);
+     
+            log.error("Transaction {} could not be published", transaction);
             throw new EbankingManagerException("Transaction {} could not be published");          //Always runtime exception
         }
     }
 
     // CONSUMER
-
     public TransactionControllerResponse getPaginatedTransactionListByUserAndDate(int pageSize, String clientName, int year, int month)
     {
         List<TransactionEntity> transactionList = consumeTransactionsFromTopic(clientName,year,month);
@@ -117,7 +113,7 @@ public class TransactionService {
                 .content(paginatedLists)
                 .totalPages(requiredPages)
                 .build();
-        logger.info("Paginated transactions list has been obtained");
+        log.info("Paginated transactions list has been obtained");
         return transactionControllerResponse;
     }
 
@@ -139,44 +135,35 @@ public class TransactionService {
                 double rate = Double.parseDouble(exchangeRateString);
                 debit_credit_score+=currentAmount*rate;
             }
-            // Limit decimals
             return (debit_credit_score*100)/100;
 
         } catch (JsonProcessingException e) {
-            // Log
-            logger.error("Failed to calculate the Debit/Credit score");
-            logger.debug("Failed to map Json to currency rates");
+        	log.error("Failed to calculate the Debit/Credit score");
+        	log.debug("Failed to map Json to currency rates");
             throw new RuntimeException(e);
         }
     }
 
     public List<TransactionEntity> consumeTransactionsFromTopic(String clientName, int year, int month){
         if (!validateDataService.validateYear(year)) {
-            // Log
-            logger.error("Year value {} from request is invalid", year);
+        	log.error("Year value {} from request is invalid", year);
             throw new IllegalArgumentException();
         }
         if (!validateDataService.validateMonth(month)) {
-            // Log
-            logger.error("The month value {} from request is invalid", month);
+        	log.error("The month value {} from request is invalid", month);
             throw new IllegalArgumentException();
         }
         if (clientService.findClientByName(clientName).isEmpty()) {
-            // Log
-            logger.error("Client by username {} is not found in the DB", clientName);
+        	log.error("Client by username {} is not found in the DB", clientName);
             throw new IllegalArgumentException();
         }
-        //Subscribe to topic
         String kafkaTopic = "transactions-" + year + "-" + clientName;
-        //Calendar sets January to 0. It is necessary to substract 1
         int kafkaPartition = month-1;
         TopicPartition partition = new TopicPartition(kafkaTopic, kafkaPartition);
         kafkaConsumer.assign(Arrays.asList(partition));
 
-        //Obtain data
         List<TransactionEntity> transactionsList = new ArrayList<>();
 
-        //Poll for records starting from beginning (0) of the partition
         kafkaConsumer.seek(partition, 0);
         ConsumerRecords<String, String> consumerRecords = kafkaConsumer.poll(Duration.ofMillis(1000));
         do{
@@ -186,16 +173,14 @@ public class TransactionService {
                     transactionsList.add(transaction);
                 } catch (JsonProcessingException e) {
                     // Log
-                    logger.error("Kafka Consumer failed to read Kafka from topic");
-                    logger.debug("Failed to map Json to Transaction");
+                	log.error("Kafka Consumer failed to read Kafka from topic");
+                	log.debug("Failed to map Json to Transaction");
                     throw new RuntimeException(e);
                 }
             }
-            //Poll for more records
             consumerRecords = kafkaConsumer.poll(Duration.ofMillis(1000));
         }
         while (!consumerRecords.isEmpty());
-        //Unsubscribe consumer but no close
         kafkaConsumer.unsubscribe();
         return transactionsList;
         }

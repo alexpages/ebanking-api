@@ -1,5 +1,6 @@
 package com.alexpages.ebankingapi.service;
 
+import com.alexpages.ebankingapi.domain.Client;
 import com.alexpages.ebankingapi.entity.ClientEntity;
 import com.alexpages.ebankingapi.error.EbankingManagerException;
 import com.alexpages.ebankingapi.repository.ClientRepository;
@@ -21,7 +22,9 @@ public class ClientService {
         return clientRepository.findClientByName(name);
     }
 
-    public ClientEntity addClient (ClientEntity client){
+    public ClientEntity addClient (Client client){
+    	
+    	
         return clientRepository.save(client);
     }
 

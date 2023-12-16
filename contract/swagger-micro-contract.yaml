@@ -185,7 +185,7 @@ components:
       in: path
       required: true
       schema:
-        type: number
+        type: integer
   schemas:
     Account:
         description: Bank account registered to a specific username
@@ -209,7 +209,7 @@ components:
         properties:
           clientId:
             description: Client Id
-            type: number
+            type: integer
             example: 1
           name:
             description: Name of the client
@@ -234,8 +234,8 @@ components:
         properties:
           transactionId:
             description: Transaction Id.
-            type: number
-            example: 0000-0000-0000
+            type: integer
+            example: 00000000000
           monetaryAmount:
             $ref: '#/components/schemas/MonetaryAmount'
           iban:

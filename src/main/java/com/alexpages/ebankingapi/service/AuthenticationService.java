@@ -26,8 +26,6 @@ import java.util.stream.Collectors;
 @Service
 public class AuthenticationService {
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
-
 	private ClientService clientService;
     private JwtService jwtService;
     private PasswordEncoder passwordEncoder;
@@ -38,7 +36,7 @@ public class AuthenticationService {
 	    Optional<ClientEntity> clientOptional = clientService.findClientByName(request.getClientName());
 	    if (clientOptional.isPresent()){
 	        String errorMessage = "Client with username: " + request.getClientName() + " ,could not be registered because it is already present in the DB";
-	        logger.error(errorMessage);
+	        log.error(errorMessage);
 	        throw new EbankingManagerException(errorMessage);
 	    }
 	    String encodedPassword = passwordEncoder.encode(request.getPassword());
@@ -57,7 +55,7 @@ public class AuthenticationService {
 	    clientService.addClient(client);
 	    String jwtToken = jwtService.generateToken(client);
 	    // Log
-	    logger.info("Client registered successfully: {}", client);
+	    log.info("Client registered successfully: {}", client);
 	    return AuthenticationResponse.builder().token(jwtToken).build();
     }
 

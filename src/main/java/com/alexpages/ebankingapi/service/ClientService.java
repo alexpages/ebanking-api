@@ -3,8 +3,10 @@ package com.alexpages.ebankingapi.service;
 import com.alexpages.ebankingapi.domain.Client;
 import com.alexpages.ebankingapi.entity.ClientEntity;
 import com.alexpages.ebankingapi.error.EbankingManagerException;
+import com.alexpages.ebankingapi.mapper.EbankingMapper;
 import com.alexpages.ebankingapi.repository.ClientRepository;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -13,7 +15,10 @@ import java.util.Optional;
 public class ClientService {
 
     private ClientRepository clientRepository;
-
+	
+    @Autowired
+    EbankingMapper ebankingMapper;
+    
     public ClientService(ClientRepository clientRepository) {
 		this.clientRepository = clientRepository;
 	}
@@ -22,10 +27,18 @@ public class ClientService {
         return clientRepository.findClientByName(name);
     }
 
-    public ClientEntity addClient (Client client){
-    	
-    	
-        return clientRepository.save(client);
+    public ClientEntity addClient (Client client)
+    {
+    	try 
+    	{
+    		//TODO relate to Authentication Service
+    		ClientEntity clientEntity = clientRepository.save(ebankingMapper.toClientEntity(client));
+    		return clientEntity;
+    	}
+    	catch(Exception e)
+    	{
+    		throw new EbankingManagerException("Error when adding client");
+    	}
     }
 
     public ClientEntity findClientByAccount(String iban){

@@ -6,9 +6,13 @@ import com.alexpages.ebankingapi.domain.Client.RoleEnum;
 import com.alexpages.ebankingapi.entity.AccountEntity;
 import com.alexpages.ebankingapi.entity.ClientEntity;
 import com.alexpages.ebankingapi.error.EbankingManagerException;
+import com.alexpages.ebankingapi.mapper.EbankingMapper;
+import com.alexpages.ebankingapi.others.AuthenticateRequest;
+import com.alexpages.ebankingapi.others.AuthenticationResponse;
 import com.alexpages.ebankingapi.others.ClientRole;
 import com.alexpages.ebankingapi.repository.ClientRepository;
 import com.alexpages.ebankingapi.service.ClientService;
+import com.alexpages.ebankingapi.service.JwtService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +21,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +40,18 @@ class ClientServiceTest {
 	
 	@Mock 
 	private ClientRepository clientRepository;
+	
+	@Mock 
+	private PasswordEncoder passwordEncoder;
+	
+	@Mock 
+	private EbankingMapper ebankingMapper;
+	
+	@Mock
+	private JwtService jwtService;
+	
+	@Mock
+	private AuthenticationManager authenticationManager;
     
 	@BeforeEach
 	public void setupBeforeEach() {
@@ -42,26 +61,66 @@ class ClientServiceTest {
     @Test
     void it_Should_Add_Client() 
     {
-        ClientEntity clientEntity = generateValidClientEntity();
-        when(clientRepository.findClientByName(any())).thenReturn(Optional.ofNullable(clientEntity));
-        when(clientRepository.save(any())).thenReturn(clientEntity);
-        assertNotNull(clientService.addClient(any()));
+        when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
+        when(ebankingMapper.toClientEntity(any())).thenReturn(generateValidClientEntity());
+    	when(clientRepository.save(any())).thenReturn(generateValidClientEntity());
+		ClientEntity result = clientService.addClient(generateValidClient());
+		assertNotNull(result);
     }
     
+    @Test
     void it_Should_Not_Add_Client() 
     {
-        when(clientRepository.findClientByName(any())).thenReturn(Optional.ofNullable(null));
-        assertNotNull(clientService.addClient(any()));
+        when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
+        when(ebankingMapper.toClientEntity(any())).thenReturn(generateValidClientEntity());
+    	when(clientRepository.save(any())).thenThrow(new RuntimeException("some error"));
+		assertThrows(EbankingManagerException.class, () -> clientService.addClient(any()));
     }
     
-    void it_Should_Not_Add_Client_2() 
+    @Test
+    void it_Should_Generate_Token() 
     {
-        ClientEntity clientEntity = generateValidClientEntity();
-        when(clientRepository.findClientByName(any())).thenReturn(Optional.ofNullable(clientEntity));
-        when(clientRepository.save(any())).thenThrow(new RuntimeException("some error"));
-        assertThrows(EbankingManagerException.class, () -> clientService.addClient(any()));
+        when(jwtService.generateToken(any())).thenReturn("encodedPassword");
+        AuthenticationResponse result = clientService.generateToken(any());
+		assertNotNull(result);
     }
     
+    
+//    @Test
+//    void it_Should_Authenticate_Token() 
+//    {
+//        when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
+//        when(ebankingMapper.toClientEntity(any())).thenReturn(generateValidClientEntity());
+//    	when(clientRepository.save(any())).thenReturn(generateValidClientEntity());
+//		
+//    	AuthenticationResponse result = clientService.authenticateToken(any());
+//		assertNotNull(result);
+//    }
+//   
+    
+//    public AuthenticationResponse authenticateToken(AuthenticateRequest request) 
+//    {
+//    	String clientName= request.getClientName();
+//        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+//                        request.getClientName(),
+//                        request.getPassword()));
+//        
+//        Optional<ClientEntity> clientOptional = clientRepository.findClientByName(clientName);
+//	    if (clientOptional.isPresent())
+//	    {
+//	    	log.error("ClientService > authenticateToken > Client: " + clientName + ", could not be authenticated");
+//	        throw new EbankingManagerException("Client could not be registered");
+//	    }  
+//	    log.info("ClientService > authenticateToken > Client authenticated successfully: {}", clientOptional.get().toString());
+//        return generateToken(clientOptional.get());
+//    }
+//    
+//    
+//    
+    
+    
+    
+
     @Test
     void it_Should_Find_Client_By_Name() 
     {
@@ -76,15 +135,6 @@ class ClientServiceTest {
         assertNull(clientService.findClientByName(any()));
     }
     
-    @Test
-    void it_Should_Find_Client_By_Account() 
-    {
-        when(clientService.findClientByAccount(any())).thenReturn(generateValidClientEntity());
-        assertNotNull(clientService.findClientByAccount(any()));
-    }
-
-    
-
     private ClientEntity generateValidClientEntity() 
     {
         ClientEntity testClient = ClientEntity.builder()

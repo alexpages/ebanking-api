@@ -1,5 +1,6 @@
 package com.alexpages.ebankingapi.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
@@ -12,11 +13,13 @@ import java.util.Optional;
 
 @Repository
 public interface ClientRepository 
-extends PagingAndSortingRepository<ClientEntity, Integer>, 
+extends JpaRepository<ClientEntity, Integer>,
+		PagingAndSortingRepository<ClientEntity, Integer>, 
 		QueryByExampleExecutor<ClientEntity>{
 
-	Optional<ClientEntity> findClientByName(String name);
+	@Query("SELECT c FROM ClientEntity c WHERE c.name = :name")
+	Optional<ClientEntity> findClientByName(@Param("name") String name);
 
-    @Query("SELECT a.client FROM Account a WHERE a.iban = :iban")
+    @Query("SELECT c.client FROM Account c WHERE c.iban = :iban")
     ClientEntity findClientByAccount(@Param("iban") String iban);
 }

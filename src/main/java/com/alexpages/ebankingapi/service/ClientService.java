@@ -15,11 +15,15 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.Optional;
 
 @Slf4j
 @Service
+@Transactional
+@Validated
 public class ClientService {
 
     private ClientRepository clientRepository;
@@ -51,16 +55,11 @@ public class ClientService {
     public ClientEntity addClient (Client client)
     {
     	try 
-    	{
-    		Optional<ClientEntity> clientOptional = clientRepository.findClientByName(client.getName());
-    	    if (!clientOptional.isPresent())
-    	    {
-    	        log.error("ClientService > addClient > Client: " + client.getName() + ",could not be added");
-    	        throw new EbankingManagerException("Client could not be registered");
-    	    }  
+    	{ 	    
     	    String encodedPassword = passwordEncoder.encode(client.getPassword());
     	    client.setPassword(encodedPassword);
-    	    return clientRepository.save(clientOptional.get());
+    	    ClientEntity clientEntity = ebankingMapper.toClientEntity(client);
+    	    return clientRepository.save(clientEntity);
     	}
     	catch(Exception e)
     	{

@@ -53,6 +53,26 @@ public class EBankingController implements EbankingApi{
 			throw new EbankingManagerException("Error when adding client");
 		}
 	}
+	
+	@Override
+	public ResponseEntity<AuthenticateClient200Response> authenticateClient(Integer clientId,
+			@Valid AuthenticateRequest authenticateRequest) {
+		
+		try 
+		{
+			//TODO Perform client validations
+			
+			//TODO handle JWT renovation
+			
+			
+		}
+		catch(Exception e)
+		{
+			// TODO APA - Handle Exception
+		}
+		return null;
+	}
+	
 
 	@Override
 	public ResponseEntity<AddTransaction201Response> addTransaction(@Valid Transaction transaction) 
@@ -72,22 +92,6 @@ public class EBankingController implements EbankingApi{
 		}
 	}
 
-	@Override
-	public ResponseEntity<AuthenticateClient200Response> authenticateClient(Integer clientId,
-			@Valid AuthenticateRequest authenticateRequest) {
-		
-		try 
-		{
-			//TODO Perform client validations
-			
-			
-		}
-		catch(Exception e)
-		{
-			// TODO APA - Handle Exception
-		}
-		return null;
-	}
 
 	@Override
 	public ResponseEntity<OutputDataSearch> getTransactions(@Valid InputDataSearch inputDataSearch) {

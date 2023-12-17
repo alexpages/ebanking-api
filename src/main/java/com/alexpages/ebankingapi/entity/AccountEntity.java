@@ -12,11 +12,10 @@ import lombok.*;
 public class AccountEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer bankId;
     private String iban;
     private String currency;
     @ManyToOne
     @JoinColumn(name = "client_id")
     private ClientEntity client;
-
 }

@@ -193,7 +193,7 @@ components:
         properties:
           bankId:
             description: Bank Id
-            type: number
+            type: integer
             example: 1
           iban:
             description: IBAN related to the bank account size

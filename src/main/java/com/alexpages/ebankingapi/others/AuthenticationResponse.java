@@ -2,11 +2,7 @@ package com.alexpages.ebankingapi.others;
 
 import lombok.*;
 
-@Getter
-@Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@Data @AllArgsConstructor @NoArgsConstructor @Builder
 public class AuthenticationResponse {
     private String token;
 }

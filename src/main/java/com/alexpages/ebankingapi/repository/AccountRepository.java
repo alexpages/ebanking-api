@@ -9,8 +9,8 @@ import com.alexpages.ebankingapi.entity.ClientEntity;
 import java.util.List;
 
 @Repository
-public interface AccountRepository extends JpaRepository<AccountEntity, Integer> {
-
+public interface AccountRepository 
+extends JpaRepository<AccountEntity, Integer> 
+{
     List<AccountEntity> findAccountsByClient(ClientEntity client);
-
 }

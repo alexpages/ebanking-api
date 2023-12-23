@@ -5,77 +5,50 @@ import com.alexpages.ebankingapi.entity.ClientEntity;
 import com.alexpages.ebankingapi.others.ClientRole;
 import com.alexpages.ebankingapi.service.JwtService;
 
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.event.annotation.AfterTestMethod;
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(classes = JwtService.class)
+@ExtendWith(MockitoExtension.class)
 class JwtServiceTest {
 
-    @Autowired
-    private JwtService underTest;
-    private ClientEntity client;
+	@InjectMocks
+    private JwtService jwtService;
 
-    @BeforeEach
-    void setUp(){
-        client = generateTestClient();
-    }
-
-    @AfterEach
-    public void tearDown() {
-        client = null;
-    }
+	private EasyRandom easyRandom;
+	
+	@BeforeEach
+	public void setUp() {
+		easyRandom = new EasyRandom();
+	}
 
     @Test
-    void itShouldGenerateCorrectTokenAndRelateToTheClient() throws Exception{
-        // Given
-
-        // When
-        String jwtToken = underTest.generateToken(client);
-        String expectedName = underTest.extractUsername(jwtToken);
-        boolean validityOfToken = underTest.isTokenValid(jwtToken, client);
-
-        // Then
+    void itShouldGenerateCorrectTokenAndRelateToTheClient() 
+    throws Exception
+    {
+        String jwtToken = jwtService.generateToken(client);
+        String expectedName = jwtService.extractUsername(jwtToken);
+        boolean validityOfToken = jwtService.isTokenValid(jwtToken, client);
         assertNotNull(jwtToken);
         assertTrue(validityOfToken);
         assertEquals(expectedName, client.getName());
     }
 
     @Test
-    void tokenShouldBeValid(){
-        // Given
-
-        // When
-        String jwtToken = underTest.generateToken(client);
-        boolean result = underTest.isTokenValid(jwtToken, client);
-
-        // Then
-        assertTrue(result);
+    void tokenShouldBeValid()
+    {
+        String jwtToken = jwtService.generateToken(easyRandom.nextObject(UserDetails.class));
+        assertTrue(jwtService.isTokenValid(jwtToken, client));
     }
-
-    private ClientEntity generateTestClient() {
-        ClientEntity testClient = ClientEntity.builder()
-                .clientRole(ClientRole.USER)
-                .id(1)
-                .name("test")
-                .password("test")
-                .build();
-        AccountEntity testAccount = AccountEntity.builder()
-                .id(1)
-                .iban("iban")
-                .currency("EUR")
-                .client(testClient)
-                .build();
-        List<AccountEntity> accounts = new ArrayList<>();
-        accounts.add(testAccount);
-        testClient.setAccounts(accounts);
-        return testClient;
-    }
-
 }

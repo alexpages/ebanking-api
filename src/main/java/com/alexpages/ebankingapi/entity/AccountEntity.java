@@ -3,12 +3,8 @@ package com.alexpages.ebankingapi.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
-@Table(name = "accounts")
+@Data @Builder @AllArgsConstructor @NoArgsConstructor @Entity
+@Table(name = "TDE_ACCOUNTS")
 public class AccountEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

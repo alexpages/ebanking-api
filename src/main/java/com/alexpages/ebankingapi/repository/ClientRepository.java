@@ -15,8 +15,8 @@ import java.util.Optional;
 public interface ClientRepository 
 extends JpaRepository<ClientEntity, Integer>,
 		PagingAndSortingRepository<ClientEntity, Integer>, 
-		QueryByExampleExecutor<ClientEntity>{
-
+		QueryByExampleExecutor<ClientEntity>
+{
 	@Query("SELECT c FROM ClientEntity c WHERE c.name = :name")
 	Optional<ClientEntity> findClientByName(@Param("name") String name);
 

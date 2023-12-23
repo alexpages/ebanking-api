@@ -32,61 +32,44 @@ import java.util.List;
 @Slf4j
 @Service
 @Transactional
+@RequiredArgsConstructor
 @Validated
 public class TransactionService {
 
-	private KafkaTemplate<String, String> kafkaTemplate;
-    private ClientService clientService;
-    private ValidateDataService validateDataService;
-    private ExchangeRateService exchangeRateService; 
-    private Calendar calendar = Calendar.getInstance();
-    private Consumer<String, String> kafkaConsumer;
-    private ObjectMapper objectMapper = new ObjectMapper();
-	
-    @Autowired
-    public TransactionService(KafkaTemplate<String, String> kafkaTemplate, ClientService clientService,
-			ValidateDataService validateDataService, ExchangeRateService exchangeRateService,
-			Consumer<String, String> kafkaConsumer, ObjectMapper objectMapper) 
-    {
-		this.kafkaTemplate = kafkaTemplate;
-		this.clientService = clientService;
-		this.validateDataService = validateDataService;
-		this.exchangeRateService = exchangeRateService;
-		this.kafkaConsumer = kafkaConsumer;
-		this.objectMapper = objectMapper;
-	}
-    
-    public TransactionService()
-    {
-    	
-    }
-    
+	private final KafkaTemplate<String, String> kafkaTemplate;
+    private final ClientService clientService;
+    private final ValidateDataService validateDataService;
+    private final ExchangeRateService exchangeRateService; 
+    private final Calendar calendar = Calendar.getInstance();
+    private final Consumer<String, String> kafkaConsumer;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     public Transaction publishTransactionToTopic(Transaction transaction)
     {    	
         String clientName = clientService.findClientNameByAccount(transaction.getIban());
-        
         calendar.setTime(DateUtils.localDateToDate(transaction.getDate()));
         int transactionPartitionMonth = calendar.get(Calendar.MONTH);                   //will be the partition of the topic
         int transactionYear = calendar.get(Calendar.YEAR);                              //will help define the topic
         String transactionTopic = "transactions-" + transactionYear + "-" + clientName; //topic
 
-        try {
+        try 
+        {
             String messageKey = transaction.getIban();
             String messageValue = objectMapper.writeValueAsString(transaction);
-            // Send transaction to topic
             kafkaTemplate.send(transactionTopic, transactionPartitionMonth, messageKey, messageValue);
-
             log.info("Transaction {} has been published", transaction);
             return transaction;
-        } catch (JsonProcessingException e) {
-     
+        } 
+        catch (JsonProcessingException e) 
+        {
             log.error("Transaction {} could not be published", transaction);
             throw new EbankingManagerException("Transaction {} could not be published");          //Always runtime exception
         }
     }
 
     // CONSUMER
-    public TransactionControllerResponse getPaginatedTransactionListByUserAndDate(int pageSize, String clientName, int year, int month)
+    public TransactionControllerResponse getPaginatedTransactionListByUserAndDate
+    (int pageSize, String clientName, int year, int month)
     {
         List<TransactionEntity> transactionList = consumeTransactionsFromTopic(clientName,year,month);
         int transactionAmount = transactionList.size();
@@ -95,7 +78,6 @@ public class TransactionService {
         List<PaginatedList> paginatedLists = new ArrayList<>();
         int beginning = 0;
         int end = pageSize;
-
         for (int i = 0; i< requiredPages; i++){
             List<TransactionEntity> transactionsOfPage = transactionList.subList(beginning, Math.min(end, transactionAmount));
             int currentPageNo = i+1;
@@ -121,7 +103,8 @@ public class TransactionService {
     {
         String currencyRates = exchangeRateService.getCurrentExchangeRateBaseUSD();
         float debit_credit_score = 0;
-        try{
+        try
+        {
             JsonNode responseJson = objectMapper.readTree(currencyRates);
             for (TransactionEntity transaction : transactionsList) {
                 String currentCurrency = String.valueOf(transaction.getCurrency());
@@ -136,15 +119,17 @@ public class TransactionService {
                 debit_credit_score+=currentAmount*rate;
             }
             return (debit_credit_score*100)/100;
-
-        } catch (JsonProcessingException e) {
+        } 
+        catch (JsonProcessingException e) 
+        {
         	log.error("Failed to calculate the Debit/Credit score");
         	log.debug("Failed to map Json to currency rates");
             throw new RuntimeException(e);
         }
     }
 
-    public List<TransactionEntity> consumeTransactionsFromTopic(String clientName, int year, int month){
+    public List<TransactionEntity> consumeTransactionsFromTopic(String clientName, int year, int month)
+    {
         if (!validateDataService.validateYear(year)) {
         	log.error("Year value {} from request is invalid", year);
             throw new IllegalArgumentException();
@@ -163,7 +148,6 @@ public class TransactionService {
         kafkaConsumer.assign(Arrays.asList(partition));
 
         List<TransactionEntity> transactionsList = new ArrayList<>();
-
         kafkaConsumer.seek(partition, 0);
         ConsumerRecords<String, String> consumerRecords = kafkaConsumer.poll(Duration.ofMillis(1000));
         do{
@@ -183,6 +167,5 @@ public class TransactionService {
         while (!consumerRecords.isEmpty());
         kafkaConsumer.unsubscribe();
         return transactionsList;
-        }
     }
-
+}

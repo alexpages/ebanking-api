@@ -1,11 +1,11 @@
 package com.alexpages.ebankingapi.service;
 
 import com.alexpages.ebankingapi.domain.AuthenticateRequest;
+import com.alexpages.ebankingapi.domain.AuthenticateResponse;
 import com.alexpages.ebankingapi.domain.Client;
 import com.alexpages.ebankingapi.entity.ClientEntity;
 import com.alexpages.ebankingapi.error.EbankingManagerException;
 import com.alexpages.ebankingapi.mapper.EbankingMapper;
-import com.alexpages.ebankingapi.others.AuthenticationResponse;
 import com.alexpages.ebankingapi.repository.ClientRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -51,7 +51,7 @@ public class ClientService {
     	}
     }
     
-    public AuthenticationResponse authenticateToken(AuthenticateRequest request) 
+    public AuthenticateResponse authenticateToken(AuthenticateRequest request) 
     {
     	try 
     	{
@@ -74,10 +74,10 @@ public class ClientService {
     	}
     }
     
-    public AuthenticationResponse generateToken(ClientEntity clientEntity) 
+    public AuthenticateResponse generateToken(ClientEntity clientEntity) 
     {
-	    AuthenticationResponse response = new AuthenticationResponse();
-	    response.setToken(jwtService.generateToken(clientEntity));
+    	AuthenticateResponse response = new AuthenticateResponse();
+	    response.setJwt(jwtService.generateToken(clientEntity));
 	    return response;
     }
 }

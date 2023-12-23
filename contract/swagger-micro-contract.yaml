@@ -13,7 +13,7 @@ info:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 servers:
-  - url: 'http://localhost:3000'
+  - url: 'http://localhost:8080'
 tags:
   - name: ebanking
     description: Endpoints related to transaction and client management
@@ -121,12 +121,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  jwt:
-                    description: Client temporary JWT
-                    type: string
-                    example: jwt0000001
+                $ref: '#/components/schemas/AuthenticateResponse'
         '404':
           $ref: '#/components/responses/404'
         '500':
@@ -270,6 +265,14 @@ components:
       example:
         value: "0.01"
         currency: "EUR"
+    AuthenticateResponse:
+      description: Response body from authentication
+      type: object
+      properties:  
+        jwt:
+          description: Client temporary JWT
+          type: string
+          example: jwt0000001
     AuthenticateRequest:
       description: Request body for client authentication
       type: object

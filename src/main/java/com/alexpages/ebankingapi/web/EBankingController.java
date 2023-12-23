@@ -1,6 +1,5 @@
 package com.alexpages.ebankingapi.web;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -8,8 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alexpages.ebankingapi.api.EbankingApi;
 import com.alexpages.ebankingapi.domain.AddClient201Response;
 import com.alexpages.ebankingapi.domain.AddTransaction201Response;
-import com.alexpages.ebankingapi.domain.AuthenticateClient200Response;
 import com.alexpages.ebankingapi.domain.AuthenticateRequest;
+import com.alexpages.ebankingapi.domain.AuthenticateResponse;
 import com.alexpages.ebankingapi.domain.Client;
 import com.alexpages.ebankingapi.domain.InputDataSearch;
 import com.alexpages.ebankingapi.domain.OutputDataSearch;
@@ -20,21 +19,16 @@ import com.alexpages.ebankingapi.service.ClientService;
 import com.alexpages.ebankingapi.service.TransactionService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 public class EBankingController implements EbankingApi{
 	
-	private ClientService clientService;
-	private TransactionService transactionService;
-	
-	@Autowired
-	public EBankingController(ClientService clientService, TransactionService transactionService)
-	{
-		this.clientService 		= clientService;
-		this.transactionService = transactionService;
-	}
+	private final ClientService clientService;
+	private final TransactionService transactionService;
 	
 	@Override
 	public ResponseEntity<AddClient201Response> addClient(@Valid Client client) 
@@ -55,7 +49,7 @@ public class EBankingController implements EbankingApi{
 	}
 	
 	@Override
-	public ResponseEntity<AuthenticateClient200Response> authenticateClient(Integer clientId,
+	public ResponseEntity<AuthenticateResponse> authenticateClient(Integer clientId,
 			@Valid AuthenticateRequest authenticateRequest) {
 		
 		try 
@@ -92,14 +86,12 @@ public class EBankingController implements EbankingApi{
 		}
 	}
 
-
 	@Override
 	public ResponseEntity<OutputDataSearch> getTransactions(@Valid InputDataSearch inputDataSearch) {
 		
 		try 
 		{
-			
-			
+					
 		}
 		catch(Exception e)
 		{

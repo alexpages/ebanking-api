@@ -16,9 +16,8 @@ import java.util.Map;
 public class KafkaConsumerConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
-    private String boostrapServers;                                     //holds the url
+    private String boostrapServers;                                 
 
-    //Config to pass to the producer config. Object can be transaction
     @Bean
     public Map<String, Object> kafkaConsumerConfiguration(){
         Map<String, Object> props = new HashMap<>();
@@ -33,10 +32,8 @@ public class KafkaConsumerConfig {
         return new DefaultKafkaConsumerFactory<>(kafkaConsumerConfiguration());
     }
 
-    @Bean //Injection of Consumer Factory
+    @Bean 
     public Consumer<String, String> kafkaConsumer(){
         return consumerFactory().createConsumer();
     }
-
-
 }

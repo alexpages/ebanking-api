@@ -1,15 +1,11 @@
 package com.alexpages.ebankingapi.services;
 
-import com.alexpages.ebankingapi.domain.Account;
 import com.alexpages.ebankingapi.domain.AuthenticateRequest;
+import com.alexpages.ebankingapi.domain.AuthenticateResponse;
 import com.alexpages.ebankingapi.domain.Client;
-import com.alexpages.ebankingapi.domain.Client.RoleEnum;
-import com.alexpages.ebankingapi.entity.AccountEntity;
 import com.alexpages.ebankingapi.entity.ClientEntity;
 import com.alexpages.ebankingapi.error.EbankingManagerException;
 import com.alexpages.ebankingapi.mapper.EbankingMapper;
-import com.alexpages.ebankingapi.others.AuthenticationResponse;
-import com.alexpages.ebankingapi.others.ClientRole;
 import com.alexpages.ebankingapi.repository.ClientRepository;
 import com.alexpages.ebankingapi.service.ClientService;
 import com.alexpages.ebankingapi.service.JwtService;
@@ -76,7 +72,7 @@ class ClientServiceTest {
     void it_Should_Generate_Token() 
     {
         when(jwtService.generateToken(any())).thenReturn("encodedPassword");
-        AuthenticationResponse result = clientService.generateToken(any());
+        AuthenticateResponse result = clientService.generateToken(any());
 		assertNotNull(result);
     }
      

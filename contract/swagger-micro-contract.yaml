@@ -274,10 +274,14 @@ components:
       description: Request body for client authentication
       type: object
       properties:
+        username:
+          description: User name of the client
+          type: string  
+          example: username123 
         password:
           description: Password of the client
-          type: string   # Adjust the type/format as needed (e.g., string, password)
-          example: password123  # Provide an example password here
+          type: string   
+          example: password123  
       required:
         - password
     OutputDataSearch:

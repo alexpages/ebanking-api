@@ -37,10 +37,14 @@ public class ClientService {
         return clientRepository.findClientByName(name);
     }
 
-    public ClientEntity addClient (Client client)
+    public ClientEntity addClient(Client client)
     {
     	try 
-    	{ 	    
+    	{ 	
+    		if (clientRepository.findClientByName(client.getName()).isPresent())
+    		{
+    			throw new EbankingManagerException("Client already exists");
+    		}
     	    String encodedPassword = passwordEncoder.encode(client.getPassword());
     	    client.setPassword(encodedPassword);
     	    return clientRepository.saveAndFlush(ebankingMapper.toClientEntity(client));
@@ -80,4 +84,10 @@ public class ClientService {
 	    response.setJwt(jwtService.generateToken(clientEntity));
 	    return response;
     }
+
+	public String findClientNameByAccount(String iban) 
+	{
+		ClientEntity clientEntity = clientRepository.findClientByAccount(iban);
+		return clientEntity.getName();
+	}
 }

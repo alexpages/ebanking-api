@@ -1,11 +1,10 @@
 package com.alexpages.ebankingapi.service;
 
+import com.alexpages.ebankingapi.domain.InputDataSearch;
 import com.alexpages.ebankingapi.domain.Transaction;
-import com.alexpages.ebankingapi.entity.TransactionEntity;
 import com.alexpages.ebankingapi.error.EbankingManagerException;
-import com.alexpages.ebankingapi.others.TransactionControllerResponse;
 import com.alexpages.ebankingapi.utils.DateUtils;
-import com.alexpages.ebankingapi.utils.PaginatedList;
+import com.alexpages.ebankingapi.utils.PageableUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,9 +13,9 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.TopicPartition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -48,10 +47,9 @@ public class TransactionService {
     {    	
         String clientName = clientService.findClientNameByAccount(transaction.getIban());
         calendar.setTime(DateUtils.localDateToDate(transaction.getDate()));
-        int transactionPartitionMonth = calendar.get(Calendar.MONTH);                   //will be the partition of the topic
-        int transactionYear = calendar.get(Calendar.YEAR);                              //will help define the topic
-        String transactionTopic = "transactions-" + transactionYear + "-" + clientName; //topic
-
+        int transactionPartitionMonth = calendar.get(Calendar.MONTH);                   
+        int transactionYear = calendar.get(Calendar.YEAR);                              
+        String transactionTopic = "transactions-" + transactionYear + "-" + clientName; 
         try 
         {
             String messageKey = transaction.getIban();
@@ -63,62 +61,87 @@ public class TransactionService {
         catch (JsonProcessingException e) 
         {
             log.error("Transaction {} could not be published", transaction);
-            throw new EbankingManagerException("Transaction {} could not be published");          //Always runtime exception
+            throw new EbankingManagerException("Transaction could not be published");         
         }
     }
 
-    // CONSUMER
-    public TransactionControllerResponse getPaginatedTransactionListByUserAndDate
-    (int pageSize, String clientName, int year, int month)
+    public Page<Transaction> getTransactions(InputDataSearch inputDataSearch)
     {
-        List<TransactionEntity> transactionList = consumeTransactionsFromTopic(clientName,year,month);
-        int transactionAmount = transactionList.size();
-        int requiredPages = (int) Math.ceil((double) transactionAmount / pageSize);
-
-        List<PaginatedList> paginatedLists = new ArrayList<>();
-        int beginning = 0;
-        int end = pageSize;
-        for (int i = 0; i< requiredPages; i++){
-            List<TransactionEntity> transactionsOfPage = transactionList.subList(beginning, Math.min(end, transactionAmount));
-            int currentPageNo = i+1;
-            PaginatedList paginatedList = PaginatedList.builder()
-                    .transactions(transactionsOfPage)
-                    .debitCreditScore(calculateDebitCreditScore(transactionsOfPage))
-                    .pageNo(currentPageNo)
-                    .build();
-            paginatedLists.add(paginatedList);
-            beginning = end;
-            end  = Math.min(end + pageSize, transactionAmount);
-        }
-        TransactionControllerResponse transactionControllerResponse = TransactionControllerResponse.builder()
-                .pageSize(pageSize)
-                .content(paginatedLists)
-                .totalPages(requiredPages)
-                .build();
-        log.info("Paginated transactions list has been obtained");
-        return transactionControllerResponse;
+    	try 
+    	{
+    		Pageable pageable = PageableUtils.getPageable(inputDataSearch.getPaginationBody());	
+            List<Transaction> transactionList = consumeTransactionsFromTopic(inputDataSearch.getClientName(),inputDataSearch.getYear(),inputDataSearch.getMonth());
+            return new PageImpl<Transaction>(transactionList, pageable, transactionList.size());    
+    	}
+    	catch (Exception e)
+    	{
+    		throw new EbankingManagerException("It was not possible to retrieve the transaction list");     
+    	}
     }
 
-    public float calculateDebitCreditScore (List<TransactionEntity> transactionsList)
+    private List<Transaction> consumeTransactionsFromTopic(String clientName, int year, int month)
+    {
+    	if (!validateDates(year, month))
+    	{
+    		throw new EbankingManagerException("Date format is not valid");     
+    	}		
+        if (!clientService.findClientByName(clientName).isPresent()) 
+        {
+        	throw new EbankingManagerException("Client name is not present in DB"); 
+        }
+        String kafkaTopic = "transactions-" + year + "-" + clientName;
+        int kafkaPartition = month-1;
+        TopicPartition partition = new TopicPartition(kafkaTopic, kafkaPartition);
+        
+        kafkaConsumer.assign(Arrays.asList(partition));
+        List<Transaction> transactionsList = new ArrayList<>();
+        kafkaConsumer.seek(partition, 0);
+        ConsumerRecords<String, String> consumerRecords = kafkaConsumer.poll(Duration.ofMillis(1000));
+        do
+        {
+            for (ConsumerRecord<String, String> consumerRecord : consumerRecords) 
+            {
+                try 
+                {
+                	Transaction transaction = objectMapper.readValue(consumerRecord.value(), Transaction.class);
+                    transactionsList.add(transaction);
+                } 
+                catch (JsonProcessingException e) 
+                {
+                	log.error("Kafka Consumer failed to read Kafka from topic");
+                	throw new EbankingManagerException("Kafka Consumer failed to read Kafka from topic");  
+                }
+            }
+            consumerRecords = kafkaConsumer.poll(Duration.ofMillis(1000));
+        }
+        while (!consumerRecords.isEmpty());
+        
+        kafkaConsumer.unsubscribe();
+        return transactionsList;
+    }
+    
+    public float calculateDebitCreditScore (List<Transaction> transactionsList)
     {
         String currencyRates = exchangeRateService.getCurrentExchangeRateBaseUSD();
-        float debit_credit_score = 0;
+        float score = 0;
         try
         {
             JsonNode responseJson = objectMapper.readTree(currencyRates);
-            for (TransactionEntity transaction : transactionsList) {
-                String currentCurrency = String.valueOf(transaction.getCurrency());
-                double currentAmount = transaction.getAmount();
+            for (Transaction transaction : transactionsList) 
+            {
+                String currentCurrency = String.valueOf(transaction.getMonetaryAmount().getCurrency());
+                double currentAmount = transaction.getMonetaryAmount().getValue();
 
-                if (responseJson.get("base").asText() == "USD"){
-                    debit_credit_score+=currentAmount;
+                if (responseJson.get("base").asText() == "USD")
+                {
+                	score+=currentAmount;
                 }
                 JsonNode rates = responseJson.get("rates");
                 String exchangeRateString = rates.get(currentCurrency).asText();
                 double rate = Double.parseDouble(exchangeRateString);
-                debit_credit_score+=currentAmount*rate;
+                score+=currentAmount*rate;
             }
-            return (debit_credit_score*100)/100;
+            return (score*100)/100;
         } 
         catch (JsonProcessingException e) 
         {
@@ -127,8 +150,8 @@ public class TransactionService {
             throw new RuntimeException(e);
         }
     }
-
-    public List<TransactionEntity> consumeTransactionsFromTopic(String clientName, int year, int month)
+    
+    private Boolean validateDates(int year, int month)
     {
         if (!validateDataService.validateYear(year)) {
         	log.error("Year value {} from request is invalid", year);
@@ -138,34 +161,6 @@ public class TransactionService {
         	log.error("The month value {} from request is invalid", month);
             throw new IllegalArgumentException();
         }
-        if (clientService.findClientByName(clientName).isEmpty()) {
-        	log.error("Client by username {} is not found in the DB", clientName);
-            throw new IllegalArgumentException();
-        }
-        String kafkaTopic = "transactions-" + year + "-" + clientName;
-        int kafkaPartition = month-1;
-        TopicPartition partition = new TopicPartition(kafkaTopic, kafkaPartition);
-        kafkaConsumer.assign(Arrays.asList(partition));
-
-        List<TransactionEntity> transactionsList = new ArrayList<>();
-        kafkaConsumer.seek(partition, 0);
-        ConsumerRecords<String, String> consumerRecords = kafkaConsumer.poll(Duration.ofMillis(1000));
-        do{
-            for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
-                try {
-                    TransactionEntity transaction = objectMapper.readValue(consumerRecord.value(), TransactionEntity.class);
-                    transactionsList.add(transaction);
-                } catch (JsonProcessingException e) {
-                    // Log
-                	log.error("Kafka Consumer failed to read Kafka from topic");
-                	log.debug("Failed to map Json to Transaction");
-                    throw new RuntimeException(e);
-                }
-            }
-            consumerRecords = kafkaConsumer.poll(Duration.ofMillis(1000));
-        }
-        while (!consumerRecords.isEmpty());
-        kafkaConsumer.unsubscribe();
-        return transactionsList;
+        return true;	
     }
 }

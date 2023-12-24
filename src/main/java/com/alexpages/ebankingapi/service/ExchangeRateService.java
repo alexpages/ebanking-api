@@ -2,8 +2,6 @@ package com.alexpages.ebankingapi.service;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +17,6 @@ import java.net.URL;
 @Service
 public class ExchangeRateService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ExchangeRateService.class);
-
     @Value("${EXCHANGE_RATE_KEY}")
     private String EXCHANGE_RATE_KEY;
 
@@ -30,7 +26,8 @@ public class ExchangeRateService {
     public String getCurrentExchangeRateBaseUSD() 
     {
     	String string_url = EXCHANGE_RATE_STRING_URL + EXCHANGE_RATE_KEY;
-        try {
+        try 
+        {
             URL url = new URL(string_url);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -46,8 +43,10 @@ public class ExchangeRateService {
                 }
                 return sb.toString();
             }
-        } catch (IOException e) {
-            logger.error("Failed to fetch external exchange rate api");
+        } 
+        catch (IOException e) 
+        {
+            log.error("Failed to fetch external exchange rate api");
             throw new EbankingManagerException("Failed to fetch external exchange rate api");
         }
         return null;

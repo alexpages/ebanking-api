@@ -1,5 +1,6 @@
 package com.alexpages.ebankingapi.web;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,11 +13,14 @@ import com.alexpages.ebankingapi.domain.AuthenticateResponse;
 import com.alexpages.ebankingapi.domain.Client;
 import com.alexpages.ebankingapi.domain.InputDataSearch;
 import com.alexpages.ebankingapi.domain.OutputDataSearch;
+import com.alexpages.ebankingapi.domain.PageResponse;
+import com.alexpages.ebankingapi.domain.Score;
 import com.alexpages.ebankingapi.domain.Transaction;
 import com.alexpages.ebankingapi.entity.ClientEntity;
 import com.alexpages.ebankingapi.error.EbankingManagerException;
 import com.alexpages.ebankingapi.service.ClientService;
 import com.alexpages.ebankingapi.service.TransactionService;
+import com.alexpages.ebankingapi.utils.PageableUtils;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +39,9 @@ public class EBankingController implements EbankingApi{
 	{
 		try 
 		{
-			//TODO Perform client validations
 			ClientEntity clientEntity = clientService.addClient(client);		
 			AddClient201Response response = new AddClient201Response();
-			response.setClientName(clientEntity.getUsername());
+			response.setClientId(clientEntity.getUsername());
 			return new ResponseEntity<>(response, HttpStatus.CREATED);
 		}
 		catch(Exception e)
@@ -49,25 +52,21 @@ public class EBankingController implements EbankingApi{
 	}
 	
 	@Override
-	public ResponseEntity<AuthenticateResponse> authenticateClient(Integer clientId,
-			@Valid AuthenticateRequest authenticateRequest) {
-		
+	public ResponseEntity<AuthenticateResponse> authenticateClient(@Valid AuthenticateRequest authenticateRequest) 
+	{
 		try 
 		{
-			//TODO Perform client validations
-			
-			//TODO handle JWT renovation
-			
-			
+			AuthenticateResponse response = clientService.authenticateToken(authenticateRequest);
+			log.info("EBankingController > authenticateClient > AuthenticateResponse: {}", response.toString());
+			return new ResponseEntity<>(response, HttpStatus.OK);
 		}
 		catch(Exception e)
 		{
-			// TODO APA - Handle Exception
+			log.error("EBankingController > authenticateClient > Error when authenticatio the client: " + authenticateRequest.getUsername());
+			throw new EbankingManagerException("Error when authenticating client");
 		}
-		return null;
 	}
 	
-
 	@Override
 	public ResponseEntity<AddTransaction201Response> addTransaction(@Valid Transaction transaction) 
 	{
@@ -87,17 +86,27 @@ public class EBankingController implements EbankingApi{
 	}
 
 	@Override
-	public ResponseEntity<OutputDataSearch> getTransactions(@Valid InputDataSearch inputDataSearch) {
-		
+	public ResponseEntity<OutputDataSearch> getTransactions(@Valid InputDataSearch inputDataSearch) 
+	{
 		try 
 		{
-					
+			Page<Transaction> transactionPage = transactionService.getTransactions(inputDataSearch);
+			if(transactionPage.getContent().isEmpty()) 
+			{
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			} 
+			PageResponse pageResponse = PageableUtils.getPaginationResponse(transactionPage, transactionPage.getPageable());
+			OutputDataSearch response = new OutputDataSearch();
+			response.setPagination(pageResponse);
+			response.setTransaction(transactionPage.getContent());
+			Score score = new Score();
+			score.setAmount(transactionService.calculateDebitCreditScore(transactionPage.getContent()));
+			response.setScore(score);
+			return new ResponseEntity<>(response, HttpStatus.OK);		
 		}
 		catch(Exception e)
 		{
-			// TODO APA - Handle Exception
-			
+			throw new EbankingManagerException("EBankingController > getTransactions > Error when getting paginated transaction list");
 		}
-		return null;
 	}
 }

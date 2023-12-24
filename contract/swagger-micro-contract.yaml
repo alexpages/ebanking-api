@@ -92,8 +92,8 @@ paths:
               schema:
                 type: object
                 properties:
-                  clientName:
-                    description: Client name
+                  clientId:
+                    description: Client identifier
                     type: string
                     example: client_01
         '400':
@@ -101,15 +101,13 @@ paths:
         '500':
           $ref: '#/components/responses/500'
           
-  /client/{clientId}/authenticate:
+  /authenticate:
     post:
       tags:
         - ebanking
       summary: Authenticate a client
       description: This method allows you to retrieve a **JWT** for the client.
       operationId: authenticateClient
-      parameters:
-        - $ref: '#/components/parameters/ClientId'
       requestBody:
         content:
           application/json:
@@ -181,6 +179,7 @@ components:
       required: true
       schema:
         type: integer
+      example: client_01  
   schemas:
     Account:
         description: Bank account registered to a specific username
@@ -286,15 +285,32 @@ components:
           type: string   
           example: password123  
       required:
+        - username
         - password
     OutputDataSearch:
-      description: Transactions's list found in the search
+      description: Transactions list found in the search
       type: object
       properties:
         pagination:
-            $ref: '#/components/schemas/PageResponse'
+          $ref: '#/components/schemas/PageResponse'
         transaction:
-            $ref: '#/components/schemas/Transaction'
+          $ref: '#/components/schemas/TransactionList'
+        score:
+          $ref: '#/components/schemas/Score'
+    TransactionList:
+      description: List of TabBars
+      type: array
+      items:
+        $ref: '#/components/schemas/Transaction'
+    Score:
+        description: Debit/Credit score for the client and month
+        type: object
+        properties:
+          amount:
+            description: Amount of money
+            type: number
+            format: float
+            example: 1000.00
     InputDataSearch:
       description: Fields for Transactions's search request
       type: object
@@ -305,11 +321,11 @@ components:
           example: client_01
         year:
           description: Year for the search
-          type: number
+          type: integer
           example: 2023
         month:
           description: Month for the search
-          type: number
+          type: integer
           example: 10
         paginationBody:
           $ref: '#/components/schemas/PaginationBody'

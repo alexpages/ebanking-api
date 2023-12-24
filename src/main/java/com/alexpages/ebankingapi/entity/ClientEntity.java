@@ -8,8 +8,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.alexpages.ebankingapi.others.ClientRole;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -36,7 +34,7 @@ public class ClientEntity implements UserDetails {
     
     @Enumerated(EnumType.STRING)
     @Column(name = "ROLE")
-    private ClientRole clientRole;
+    private String clientRole;
    
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "CLIENT_ID")

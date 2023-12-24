@@ -15,15 +15,9 @@ class ExchangeRateServiceTest {
     private ExchangeRateService underTest;
 
     @Test
-    void itShouldGetCurrentExchangeRate() {
-        // Given
-
-        // When
+    void itShouldGetCurrentExchangeRate() 
+    {
         String rates = underTest.getCurrentExchangeRateBaseUSD();
-
-        // Then
         assertNotNull(rates);
     }
-
-
 }

@@ -26,5 +26,4 @@ public interface EbankingMapper {
 	
 	@Named("toAccount")
 	Account toAccount(AccountEntity accountEntity);
-
 }

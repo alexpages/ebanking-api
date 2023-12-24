@@ -2,6 +2,7 @@ package com.alexpages.ebankingapi.service;
 
 import com.alexpages.ebankingapi.domain.InputDataSearch;
 import com.alexpages.ebankingapi.domain.Transaction;
+import com.alexpages.ebankingapi.entity.ClientEntity;
 import com.alexpages.ebankingapi.error.EbankingManagerException;
 import com.alexpages.ebankingapi.utils.DateUtils;
 import com.alexpages.ebankingapi.utils.PageableUtils;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -44,8 +46,13 @@ public class TransactionService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public Transaction publishTransactionToTopic(Transaction transaction)
-    {    	
-        String clientName = clientService.findClientNameByAccount(transaction.getIban());
+    {   
+    	Optional<ClientEntity> clientEntity = clientService.findClientByAccount(transaction.getIban());
+    	if (!clientEntity.isPresent())
+    	{
+    		throw new EbankingManagerException("Client does not exist"); 
+    	}
+    	String clientName = clientEntity.get().getName();
         calendar.setTime(DateUtils.localDateToDate(transaction.getDate()));
         int transactionPartitionMonth = calendar.get(Calendar.MONTH);                   
         int transactionYear = calendar.get(Calendar.YEAR);                              

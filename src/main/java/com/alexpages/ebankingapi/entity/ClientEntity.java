@@ -34,7 +34,7 @@ public class ClientEntity implements UserDetails {
     
     @Enumerated(EnumType.STRING)
     @Column(name = "ROLE")
-    private String clientRole;
+    private String role;
    
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "CLIENT_ID")
@@ -42,7 +42,7 @@ public class ClientEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-    	return Arrays.asList(new SimpleGrantedAuthority(clientRole.name()));
+        return Arrays.asList(new SimpleGrantedAuthority(role));
     }
 
     @Override

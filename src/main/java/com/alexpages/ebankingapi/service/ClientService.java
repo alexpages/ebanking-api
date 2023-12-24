@@ -85,9 +85,9 @@ public class ClientService {
 	    return response;
     }
 
-	public String findClientNameByAccount(String iban) 
+	public Optional<ClientEntity> findClientByAccount(String iban) 
 	{
-		ClientEntity clientEntity = clientRepository.findClientByAccount(iban);
-		return clientEntity.getName();
+		Optional<ClientEntity> clientEntity = clientRepository.findClientByAccount(iban);
+		return clientEntity;
 	}
 }

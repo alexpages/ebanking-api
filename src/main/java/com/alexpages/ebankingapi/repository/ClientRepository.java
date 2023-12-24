@@ -21,5 +21,5 @@ extends JpaRepository<ClientEntity, Integer>,
 	Optional<ClientEntity> findClientByName(@Param("name") String name);
 
     @Query("SELECT c.client FROM Account c WHERE c.iban = :iban")
-    ClientEntity findClientByAccount(@Param("iban") String iban);
+    Optional<ClientEntity> findClientByAccount(@Param("iban") String iban);
 }

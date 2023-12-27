@@ -60,7 +60,7 @@ public class TransactionService {
         try 
         {
             String messageKey = transaction.getIban();
-            String messageValue = objectMapper.writeValueAsString(transaction);
+            String messageValue = objectMapper.writeValueAsString(transaction.toString());
             kafkaTemplate.send(transactionTopic, transactionPartitionMonth, messageKey, messageValue);
             log.info("Transaction {} has been published", transaction);
             return transaction;

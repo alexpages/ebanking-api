@@ -1,15 +1,20 @@
 package com.alexpages.ebankingapi.services;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.alexpages.ebankingapi.service.ValidateDataService;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.Year;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.jupiter.api.BeforeEach;
 
-@SpringBootTest(classes = ValidateDataService.class)
+@ExtendWith(MockitoExtension.class)
 class ValidateDataServiceTest {
 
     private ValidateDataService validateDataService;
@@ -23,6 +28,7 @@ class ValidateDataServiceTest {
     @Test
     void validateYear() 
     {
+		boolean value = (2020 < 2003 );  	
         assertTrue(validateDataService.validateYear(2020));
         assertFalse(validateDataService.validateYear(1900));
         assertFalse(validateDataService.validateYear(2025));

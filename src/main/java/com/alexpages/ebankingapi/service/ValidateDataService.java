@@ -7,11 +7,6 @@ import java.time.Year;
 @Service
 public class ValidateDataService {
 	
-	public ValidateDataService()
-	{
-		
-	}
-
     public boolean validateYear(int year) 
     {
     	return (year < 2003 || year > Year.now().getValue());

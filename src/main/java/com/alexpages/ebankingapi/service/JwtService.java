@@ -20,7 +20,7 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    @Value("${JWT_KEY}")
+    @Value("${jwt.key}")
     private String JWT_KEY;
 
     public String extractUsername(String jwtToken) {

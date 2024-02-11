@@ -12,7 +12,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-@Data @AllArgsConstructor @NoArgsConstructor @Builder @Entity 
+@Data 
+@AllArgsConstructor 
+@NoArgsConstructor 
+@Builder 
+@Entity 
 @Table(name = "TDE_CLIENT")
 public class ClientEntity implements UserDetails {
 
